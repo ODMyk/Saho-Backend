@@ -9,5 +9,5 @@ public partial class RoleEntity
 
     public string Title { get; set; } = null!;
 
-    public virtual ICollection<User> Users { get; set; } = new List<User>();
+    public virtual ICollection<UserEntity> Users { get; set; } = new List<UserEntity>();
 }

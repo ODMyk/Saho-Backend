@@ -11,9 +11,9 @@ public partial class AlbumEntity
 
     public int ArtistId { get; set; }
 
-    public virtual User Artist { get; set; } = null!;
+    public virtual User ArtistEntity { get; set; } = null!;
 
-    public virtual ICollection<Song> Songs { get; set; } = new List<Song>();
+    public virtual ICollection<SongEntity> Songs { get; set; } = new List<Song>();
 
-    public virtual ICollection<User> Users { get; set; } = new List<User>();
+    public virtual ICollection<UserEntity> Users { get; set; } = new List<User>();
 }

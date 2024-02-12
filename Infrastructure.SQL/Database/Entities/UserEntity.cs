@@ -11,19 +11,19 @@ public partial class UserEntity
 
     public int RoleId { get; set; }
 
-    public virtual ICollection<Album> Albums { get; set; } = new List<Album>();
+    public virtual ICollection<AlbumEntity> Albums { get; set; } = new List<AlbumEntity>();
 
-    public virtual ICollection<Playlist> PlaylistsNavigation { get; set; } = new List<Playlist>();
+    public virtual ICollection<PlaylistEntity> PlaylistsNavigation { get; set; } = new List<PlaylistEntity>();
 
-    public virtual Role Role { get; set; } = null!;
+    public virtual RoleEntity Role { get; set; } = null!;
 
-    public virtual ICollection<Album> AlbumsNavigation { get; set; } = new List<Album>();
+    public virtual ICollection<AlbumEntity> AlbumsNavigation { get; set; } = new List<AlbumEntity>();
 
-    public virtual ICollection<User> Artists { get; set; } = new List<User>();
+    public virtual ICollection<UserEntity> Artists { get; set; } = new List<UserEntity>();
 
-    public virtual ICollection<Playlist> Playlists { get; set; } = new List<Playlist>();
+    public virtual ICollection<PlaylistEntity> Playlists { get; set; } = new List<PlaylistEntity>();
 
-    public virtual ICollection<Song> Songs { get; set; } = new List<Song>();
+    public virtual ICollection<SongEntity> Songs { get; set; } = new List<SongEntity>();
 
-    public virtual ICollection<User> Users { get; set; } = new List<User>();
+    public virtual ICollection<UserEntity> Users { get; set; } = new List<UserEntity>();
 }

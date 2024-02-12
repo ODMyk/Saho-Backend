@@ -13,9 +13,9 @@ public partial class SongEntity
 
     public int TimesPlayed { get; set; }
 
-    public virtual ICollection<Album> Albums { get; set; } = new List<Album>();
+    public virtual ICollection<AlbumEntity> Albums { get; set; } = new List<AlbumEntity>();
 
-    public virtual ICollection<Playlist> Playlists { get; set; } = new List<Playlist>();
+    public virtual ICollection<PlaylistEntity> Playlists { get; set; } = new List<PlaylistEntity>();
 
-    public virtual ICollection<User> Users { get; set; } = new List<User>();
+    public virtual ICollection<UserEntity> Users { get; set; } = new List<UserEntity>();
 }

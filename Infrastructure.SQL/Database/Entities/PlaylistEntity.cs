@@ -13,9 +13,9 @@ public partial class PlaylistEntity
 
     public bool IsPrivate { get; set; }
 
-    public virtual User Owner { get; set; } = null!;
+    public virtual UserEntity Owner { get; set; } = null!;
 
-    public virtual ICollection<Song> Songs { get; set; } = new List<Song>();
+    public virtual ICollection<SongEntity> Songs { get; set; } = new List<SongEntity>();
 
-    public virtual ICollection<User> Users { get; set; } = new List<User>();
+    public virtual ICollection<UserEntity> Users { get; set; } = new List<UserEntity>();
 }
