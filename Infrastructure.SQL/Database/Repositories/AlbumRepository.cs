@@ -18,7 +18,7 @@ public class AlbumRepository : IAlbumRepository
         var albumEntity = new AlbumEntity
         {
             Title = album.Title,
-            ArtistId = Album.ArtistId,
+            ArtistId = album.ArtistId,
         };
         await _context.AddAsync(albumEntity);
         await _context.SaveChangesAsync();
@@ -35,21 +35,20 @@ public class AlbumRepository : IAlbumRepository
     {
         var albumEntity = new AlbumEntity
         {
-            Id = album.Id,
             Title = album.Title,
             ArtistId = album.ArtistId,
         };
 
-        return await _context.Albums.Where(x => x.Id == albumEntity.Id).executeUpdateAsync(s => s.SetProperty(p => p.Title, albumEntity.Title).SetProperty(p => p.ArtistId, albumEntity.ArtistId));
+        return await _context.Albums.Where(x => x.Id == albumEntity.Id).ExecuteUpdateAsync(s => s.SetProperty(p => p.Title, albumEntity.Title).SetProperty(p => p.ArtistId, albumEntity.ArtistId));
     }
 
-    public async Task<AlbumDto> RetreiveAsync(int id)
+    public async Task<AlbumDto> RetrieveAsync(int id)
     {
-        return await _context.AsNoTracking().Where(x => x.Id == id).Select(x => new AlbumDto { Id = x.Id, Title = x.Title, ArtistId = x.ArtistId }).FirstOrDefaultAsync();
+        return await _context.Albums.AsNoTracking().Where(x => x.Id == id).Select(x => new AlbumDto { Id = x.Id, Title = x.Title, ArtistId = x.ArtistId }).FirstOrDefaultAsync();
     }
 
     public async Task<IList<AlbumDto>> GetAllAsync()
     {
-        return await _context.AsNoTracking().Select(x => new AlbumDto { Id = x.Id, Title = x.Title, ArtistId = x.ArtistId }).ToListAsync();
+        return await _context.Albums.AsNoTracking().Select(x => new AlbumDto { Id = x.Id, Title = x.Title, ArtistId = x.ArtistId }).ToListAsync();
     }
 }

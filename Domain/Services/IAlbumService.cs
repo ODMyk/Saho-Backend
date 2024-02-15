@@ -2,8 +2,8 @@ using Domain.DTOs;
 namespace Domain.Services;
 public interface IAlbumService
 {
-    CountryDto Retrieve(int id);
-    IList<CountryDto> GetAll();
-    int CreateOrUpdate(AlbumDto album);
-    bool Delete(int id);
+    Task<AlbumDto> RetrieveAsync(int id);
+    Task<IList<AlbumDto>> GetAllAsync();
+    Task<int> CreateOrUpdateAsync(AlbumDto album);
+    Task<bool> DeleteAsync(int id);
 }

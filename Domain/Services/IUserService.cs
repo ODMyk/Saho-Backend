@@ -2,8 +2,8 @@ using Domain.DTOs;
 namespace Domain.Services;
 public interface IUserService
 {
-    UserDto Retrieve(int id);
-    IList<UserDto> GetAll();
-    int CreateOrUpdate(UserDto user);
-    bool Delete(int id);
+    Task<UserDto> RetrieveAsync(int id);
+    Task<IList<UserDto>> GetAllAsync();
+    Task<int> CreateOrUpdateAsync(UserDto user);
+    Task<bool> DeleteAsync(int id);
 }

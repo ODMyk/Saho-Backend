@@ -2,8 +2,8 @@ using Domain.DTOs;
 namespace Domain.Services;
 public interface ISongService
 {
-    SongDto Retrieve(int id);
-    IList<SongDto> GetAll();
-    int CreateOrUpdate(SongDto song);
-    bool Delete(int id);
+    Task<SongDto> RetrieveAsync(int id);
+    Task<IList<SongDto>> GetAllAsync();
+    Task<int> CreateOrUpdateAsync(SongDto song);
+    Task<bool> DeleteAsync(int id);
 }

@@ -1,6 +1,6 @@
 using Domain.DTOs;
 using Domain.Repositories;
-using DOmain.Services;
+using Domain.Services;
 
 namespace BLL.Services;
 
@@ -16,7 +16,7 @@ public class SongService : ISongService
         return await _songRepository.DeleteAsync(id) > 0;
     }
 
-    public async Task<List<SongDto>> GetAllAsync()
+    public async Task<IList<SongDto>> GetAllAsync()
     {
         return await _songRepository.GetAllAsync();
     }
@@ -26,17 +26,14 @@ public class SongService : ISongService
     }
     public async Task<int> CreateOrUpdateAsync(SongDto song)
     {
-        if (song?.Id is null)
+        if (song.Id is null)
         {
             return await _songRepository.CreateAsync(song);
         }
         if (await _songRepository.CreateAsync(song) > 0)
         {
-            return song.Id;
+            return song.Id.Value;
         }
         return 0;
     }
-    public async Task<bool> UpdateDescriptionAsync(int id, string description)
-    {
-        return await _songRepository.UpdateDescriptionAsync(id, description) > 0;
-    }
+}

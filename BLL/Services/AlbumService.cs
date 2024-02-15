@@ -1,6 +1,6 @@
 using Domain.DTOs;
 using Domain.Repositories;
-using DOmain.Services;
+using Domain.Services;
 
 namespace BLL.Services;
 
@@ -16,7 +16,7 @@ public class AlbumService : IAlbumService
         return await _albumRepository.DeleteAsync(id) > 0;
     }
 
-    public async Task<List<AlbumDto>> GetAllAsync()
+    public async Task<IList<AlbumDto>> GetAllAsync()
     {
         return await _albumRepository.GetAllAsync();
     }
@@ -26,17 +26,15 @@ public class AlbumService : IAlbumService
     }
     public async Task<int> CreateOrUpdateAsync(AlbumDto album)
     {
-        if (album?.Id is null)
+        if (album.Id is null)
         {
             return await _albumRepository.CreateAsync(album);
         }
-        if (await _albumRepository.CreateAsync(album) > 0)
+        
+        if (await _albumRepository.UpdateAsync(album) > 0)
         {
-            return album.Id;
+            return album.Id.Value;
         }
         return 0;
     }
-    public async Task<bool> UpdateDescriptionAsync(int id, string description)
-    {
-        return await _albumRepository.UpdateDescriptionAsync(id, description) > 0;
-    }
+}

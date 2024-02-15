@@ -1,6 +1,6 @@
 namespace Domain.DTOs;
 
-public class SongDTO
+public class SongDto
 {
     public int? Id { get; set; }
     public string Title { get; set; }

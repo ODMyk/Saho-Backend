@@ -17,7 +17,7 @@ public class SongRepository : ISongRepository
     {
         var songEntity = new SongEntity
         {
-            Title = song.Nickame,
+            Title = song.Title,
             TimesPlayed = song.TimesPlayed,
             ArtistId = song.ArtistId,
         };
@@ -36,22 +36,21 @@ public class SongRepository : ISongRepository
     {
         var songEntity = new SongEntity
         {
-            Id = song.Id,
             Title = song.Title,
             TimesPlayed = song.TimesPlayed,
             ArtistId = song.ArtistId,
         };
 
-        return await _context.Songs.Where(x => x.Id == songEntity.Id).executeUpdateAsync(s => s.SetProperty(p => p.Title, songEntity.Title).SetProperty(p => p.TimesPlayed, songEntity.TimesPlayed).SetProperty(p => p.ArtistId, songEntity.ArtistId));
+        return await _context.Songs.Where(x => x.Id == songEntity.Id).ExecuteUpdateAsync(s => s.SetProperty(p => p.Title, songEntity.Title).SetProperty(p => p.TimesPlayed, songEntity.TimesPlayed).SetProperty(p => p.ArtistId, songEntity.ArtistId));
     }
 
-    public async Task<SongDto> RetreiveAsync(int id)
+    public async Task<SongDto> RetrieveAsync(int id)
     {
-        return await _context.AsNoTracking().Where(x => x.Id == id).Select(x => new SongDto { Id = x.Id, Title = x.Title, TimesPlayed = x.TimesPlayed, ArtistId = x.ArtistId }).FirstOrDefaultAsync();
+        return await _context.Songs.AsNoTracking().Where(x => x.Id == id).Select(x => new SongDto { Id = x.Id, Title = x.Title, TimesPlayed = x.TimesPlayed, ArtistId = x.ArtistId }).FirstOrDefaultAsync();
     }
 
     public async Task<IList<SongDto>> GetAllAsync()
     {
-        return await _context.AsNoTracking().Select(x => new SongDto { Id = x.Id, Title = x.Title, TimesPlayed = x.TimesPlayed, ArtistId = x.ArtistId }).ToListAsync();
+        return await _context.Songs.AsNoTracking().Select(x => new SongDto { Id = x.Id, Title = x.Title, TimesPlayed = x.TimesPlayed, ArtistId = x.ArtistId }).ToListAsync();
     }
 }

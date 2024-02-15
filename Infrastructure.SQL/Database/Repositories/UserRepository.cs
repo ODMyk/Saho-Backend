@@ -17,7 +17,7 @@ public class UserRepository : IUserRepository
     {
         var userEntity = new UserEntity
         {
-            Nickname = user.Nickame,
+            Nickname = user.Nickname,
             RoleId = user.RoleId,
         };
         await _context.AddAsync(userEntity);
@@ -35,21 +35,20 @@ public class UserRepository : IUserRepository
     {
         var userEntity = new UserEntity
         {
-            Id = user.Id,
             Nickname = user.Nickname,
             RoleId = user.RoleId,
         };
 
-        return await _context.Users.Where(x => x.Id == user.Id).executeUpdateAsync(s => s.SetProperty(p => p.Nickname, userEntity.Nickname).SetProperty(p => p.RoleId, user.RoleId));
+        return await _context.Users.Where(x => x.Id == user.Id).ExecuteUpdateAsync(s => s.SetProperty(p => p.Nickname, userEntity.Nickname).SetProperty(p => p.RoleId, user.RoleId));
     }
 
-    public async Task<UserDto> RetreiveAsync(int id)
+    public async Task<UserDto> RetrieveAsync(int id)
     {
-        return await _context.AsNoTracking().Where(x => x.Id == id).Select(x => new UserDto { Id = x.Id, Nickname = x.Nickname, RoleId = x.RoleId }).FirstOrDefaultAsync();
+        return await _context.Users.AsNoTracking().Where(x => x.Id == id).Select(x => new UserDto { Id = x.Id, Nickname = x.Nickname, RoleId = x.RoleId }).FirstOrDefaultAsync();
     }
 
     public async Task<IList<UserDto>> GetAllAsync()
     {
-        return await _context.AsNoTracking().Select(x => new UserDto { Id = x.Id, Nickname = x.Nickname, RoleId = x.RoleId }).ToListAsync();
+        return await _context.Users.AsNoTracking().Select(x => new UserDto { Id = x.Id, Nickname = x.Nickname, RoleId = x.RoleId }).ToListAsync();
     }
 }

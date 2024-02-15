@@ -17,14 +17,14 @@ public class PlaylistRepository : IPlaylistRepository
     {
         var playlistEntity = new PlaylistEntity
         {
-            Title = playlist.Nickame,
+            Title = playlist.Title,
             IsPrivate = playlist.IsPrivate,
             OwnerId = playlist.OwnerId,
         };
         await _context.AddAsync(playlistEntity);
         await _context.SaveChangesAsync();
 
-        return PlaylistEntity.Id;
+        return playlistEntity.Id;
     }
 
     public async Task<int> DeleteAsync(int id)
@@ -32,26 +32,25 @@ public class PlaylistRepository : IPlaylistRepository
         return await _context.Playlists.Where(x => x.Id == id).ExecuteDeleteAsync();
     }
 
-    public async Task<int> UpdateAsync(PlaylistDto Playlist)
+    public async Task<int> UpdateAsync(PlaylistDto playlist)
     {
-        var PlaylistEntity = new PlaylistEntity
+        var playlistEntity = new PlaylistEntity
         {
-            Id = Playlist.Id,
-            Title = Playlist.Title,
-            IsPrivate = Playlist.IsPrivate,
-            OwnerId = Playlist.OwnerId,
+            Title = playlist.Title,
+            IsPrivate = playlist.IsPrivate,
+            OwnerId = playlist.OwnerId,
         };
 
-        return await _context.Playlists.Where(x => x.Id == playlistEntity.Id).executeUpdateAsync(s => s.SetProperty(p => p.Title, playlistEntity.Title).SetProperty(p => p.IsPrivate, playlistEntity.IsPrivate).SetProperty(p => p.OwnerId, playlistEntity.OwnerId));
+        return await _context.Playlists.Where(x => x.Id == playlistEntity.Id).ExecuteUpdateAsync(s => s.SetProperty(p => p.Title, playlistEntity.Title).SetProperty(p => p.IsPrivate, playlistEntity.IsPrivate).SetProperty(p => p.OwnerId, playlistEntity.OwnerId));
     }
 
-    public async Task<PlaylistDto> RetreiveAsync(int id)
+    public async Task<PlaylistDto> RetrieveAsync(int id)
     {
-        return await _context.AsNoTracking().Where(x => x.Id == id).Select(x => new PlaylistDto { Id = x.Id, Title = x.Title, IsPrivate = x.IsPrivate, OwnerId = x.OwnerId }).FirstOrDefaultAsync();
+        return await _context.Playlists.AsNoTracking().Where(x => x.Id == id).Select(x => new PlaylistDto { Id = x.Id, Title = x.Title, IsPrivate = x.IsPrivate, OwnerId = x.OwnerId }).FirstOrDefaultAsync();
     }
 
     public async Task<IList<PlaylistDto>> GetAllAsync()
     {
-        return await _context.AsNoTracking().Select(x => new PlaylistDto { Id = x.Id, Title = x.Title, IsPrivate = x.IsPrivate, OwnerId = x.OwnerId }).ToListAsync();
+        return await _context.Playlists.AsNoTracking().Select(x => new PlaylistDto { Id = x.Id, Title = x.Title, IsPrivate = x.IsPrivate, OwnerId = x.OwnerId }).ToListAsync();
     }
 }

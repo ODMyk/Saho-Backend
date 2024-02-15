@@ -1,6 +1,6 @@
 using Domain.DTOs;
 using Domain.Repositories;
-using DOmain.Services;
+using Domain.Services;
 
 namespace BLL.Services;
 
@@ -16,7 +16,7 @@ public class PlaylistService : IPlaylistService
         return await _playlistRepository.DeleteAsync(id) > 0;
     }
 
-    public async Task<List<PlaylistDto>> GetAllAsync()
+    public async Task<IList<PlaylistDto>> GetAllAsync()
     {
         return await _playlistRepository.GetAllAsync();
     }
@@ -26,17 +26,14 @@ public class PlaylistService : IPlaylistService
     }
     public async Task<int> CreateOrUpdateAsync(PlaylistDto playlist)
     {
-        if (playlist?.Id is null)
+        if (playlist.Id is null)
         {
             return await _playlistRepository.CreateAsync(playlist);
         }
         if (await _playlistRepository.CreateAsync(playlist) > 0)
         {
-            return playlist.Id;
+            return playlist.Id.Value;
         }
         return 0;
     }
-    public async Task<bool> UpdateDescriptionAsync(int id, string description)
-    {
-        return await _playlistRepository.UpdateDescriptionAsync(id, description) > 0;
-    }
+}
