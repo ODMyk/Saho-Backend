@@ -36,14 +36,14 @@ public partial class PostgreDbContext : PostgreDbContext
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
-                .HasColumnName("ID");
-            entity.Property(e => e.ArtistId).HasColumnName("ArtistID");
+                .HasColumnName("Id");
+            entity.Property(e => e.ArtistId).HasColumnName("ArtistId");
             entity.Property(e => e.Title).HasMaxLength(50);
 
             entity.HasOne(d => d.Artist).WithMany(p => p.Albums)
                 .HasForeignKey(d => d.ArtistId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("ArtistID");
+                .HasConstraintName("ArtistId");
 
             entity.HasMany(d => d.Songs).WithMany(p => p.Albums)
                 .UsingEntity<Dictionary<string, object>>(
@@ -51,17 +51,17 @@ public partial class PostgreDbContext : PostgreDbContext
                     r => r.HasOne<Song>().WithMany()
                         .HasForeignKey("SongId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("SongID"),
+                        .HasConstraintName("SongId"),
                     l => l.HasOne<Album>().WithMany()
                         .HasForeignKey("AlbumId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("AlbumID"),
+                        .HasConstraintName("AlbumId"),
                     j =>
                     {
                         j.HasKey("AlbumId", "SongId").HasName("Album songs_pkey");
                         j.ToTable("Album songs");
-                        j.IndexerProperty<int>("AlbumId").HasColumnName("AlbumID");
-                        j.IndexerProperty<int>("SongId").HasColumnName("SongID");
+                        j.IndexerProperty<int>("AlbumId").HasColumnName("AlbumId");
+                        j.IndexerProperty<int>("SongId").HasColumnName("SongId");
                     });
 
             entity.HasMany(d => d.Users).WithMany(p => p.AlbumsNavigation)
@@ -70,17 +70,17 @@ public partial class PostgreDbContext : PostgreDbContext
                     r => r.HasOne<User>().WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("UserID"),
+                        .HasConstraintName("UserId"),
                     l => l.HasOne<Album>().WithMany()
                         .HasForeignKey("AlbumId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("AlbumID"),
+                        .HasConstraintName("AlbumId"),
                     j =>
                     {
                         j.HasKey("AlbumId", "UserId").HasName("Favorite albums_pkey");
                         j.ToTable("Favorite albums");
-                        j.IndexerProperty<int>("AlbumId").HasColumnName("AlbumID");
-                        j.IndexerProperty<int>("UserId").HasColumnName("UserID");
+                        j.IndexerProperty<int>("AlbumId").HasColumnName("AlbumId");
+                        j.IndexerProperty<int>("UserId").HasColumnName("UserId");
                     });
         });
 
@@ -90,14 +90,14 @@ public partial class PostgreDbContext : PostgreDbContext
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
-                .HasColumnName("ID");
-            entity.Property(e => e.OwnerId).HasColumnName("OwnerID");
+                .HasColumnName("Id");
+            entity.Property(e => e.OwnerId).HasColumnName("OwnerId");
             entity.Property(e => e.Title).HasMaxLength(50);
 
             entity.HasOne(d => d.Owner).WithMany(p => p.PlaylistsNavigation)
                 .HasForeignKey(d => d.OwnerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("OwnerID");
+                .HasConstraintName("OwnerId");
 
             entity.HasMany(d => d.Songs).WithMany(p => p.Playlists)
                 .UsingEntity<Dictionary<string, object>>(
@@ -105,17 +105,17 @@ public partial class PostgreDbContext : PostgreDbContext
                     r => r.HasOne<Song>().WithMany()
                         .HasForeignKey("SongId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("SongID"),
+                        .HasConstraintName("SongId"),
                     l => l.HasOne<Playlist>().WithMany()
                         .HasForeignKey("PlaylistId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("PlaylistID"),
+                        .HasConstraintName("PlaylistId"),
                     j =>
                     {
                         j.HasKey("PlaylistId", "SongId").HasName("Playlist songs_pkey");
                         j.ToTable("Playlist songs");
-                        j.IndexerProperty<int>("PlaylistId").HasColumnName("PlaylistID");
-                        j.IndexerProperty<int>("SongId").HasColumnName("SongID");
+                        j.IndexerProperty<int>("PlaylistId").HasColumnName("PlaylistId");
+                        j.IndexerProperty<int>("SongId").HasColumnName("SongId");
                     });
 
             entity.HasMany(d => d.Users).WithMany(p => p.Playlists)
@@ -124,17 +124,17 @@ public partial class PostgreDbContext : PostgreDbContext
                     r => r.HasOne<User>().WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("UserID"),
+                        .HasConstraintName("UserId"),
                     l => l.HasOne<Playlist>().WithMany()
                         .HasForeignKey("PlaylistId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("PlaylistID"),
+                        .HasConstraintName("PlaylistId"),
                     j =>
                     {
                         j.HasKey("PlaylistId", "UserId").HasName("Favorite playlists_pkey");
                         j.ToTable("Favorite playlists");
-                        j.IndexerProperty<int>("PlaylistId").HasColumnName("PlaylistID");
-                        j.IndexerProperty<int>("UserId").HasColumnName("UserID");
+                        j.IndexerProperty<int>("PlaylistId").HasColumnName("PlaylistId");
+                        j.IndexerProperty<int>("UserId").HasColumnName("UserId");
                     });
         });
 
@@ -144,7 +144,7 @@ public partial class PostgreDbContext : PostgreDbContext
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
-                .HasColumnName("ID");
+                .HasColumnName("Id");
             entity.Property(e => e.Title).HasMaxLength(50);
         });
 
@@ -154,8 +154,8 @@ public partial class PostgreDbContext : PostgreDbContext
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
-                .HasColumnName("ID");
-            entity.Property(e => e.ArtistId).HasColumnName("ArtistID");
+                .HasColumnName("Id");
+            entity.Property(e => e.ArtistId).HasColumnName("ArtistId");
             entity.Property(e => e.Title).HasMaxLength(50);
 
             entity.HasMany(d => d.Users).WithMany(p => p.Songs)
@@ -164,17 +164,17 @@ public partial class PostgreDbContext : PostgreDbContext
                     r => r.HasOne<User>().WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("UserID"),
+                        .HasConstraintName("UserId"),
                     l => l.HasOne<Song>().WithMany()
                         .HasForeignKey("SongId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("SongID"),
+                        .HasConstraintName("SongId"),
                     j =>
                     {
                         j.HasKey("SongId", "UserId").HasName("Favorite songs_pkey");
                         j.ToTable("Favorite songs");
-                        j.IndexerProperty<int>("SongId").HasColumnName("SongID");
-                        j.IndexerProperty<int>("UserId").HasColumnName("UserID");
+                        j.IndexerProperty<int>("SongId").HasColumnName("SongId");
+                        j.IndexerProperty<int>("UserId").HasColumnName("UserId");
                     });
         });
 
@@ -184,14 +184,14 @@ public partial class PostgreDbContext : PostgreDbContext
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
-                .HasColumnName("ID");
+                .HasColumnName("Id");
             entity.Property(e => e.Nickname).HasMaxLength(50);
-            entity.Property(e => e.RoleId).HasColumnName("RoleID");
+            entity.Property(e => e.RoleId).HasColumnName("RoleId");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RoleID");
+                .HasConstraintName("RoleId");
 
             entity.HasMany(d => d.Artists).WithMany(p => p.Users)
                 .UsingEntity<Dictionary<string, object>>(
@@ -199,17 +199,17 @@ public partial class PostgreDbContext : PostgreDbContext
                     r => r.HasOne<User>().WithMany()
                         .HasForeignKey("ArtistId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("ArtistID"),
+                        .HasConstraintName("ArtistId"),
                     l => l.HasOne<User>().WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("UserID"),
+                        .HasConstraintName("UserId"),
                     j =>
                     {
                         j.HasKey("ArtistId", "UserId").HasName("Favorite artists_pkey");
                         j.ToTable("Favorite artists");
-                        j.IndexerProperty<int>("ArtistId").HasColumnName("ArtistID");
-                        j.IndexerProperty<int>("UserId").HasColumnName("UserID");
+                        j.IndexerProperty<int>("ArtistId").HasColumnName("ArtistId");
+                        j.IndexerProperty<int>("UserId").HasColumnName("UserId");
                     });
 
             entity.HasMany(d => d.Users).WithMany(p => p.Artists)
@@ -218,17 +218,17 @@ public partial class PostgreDbContext : PostgreDbContext
                     r => r.HasOne<User>().WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("UserID"),
+                        .HasConstraintName("UserId"),
                     l => l.HasOne<User>().WithMany()
                         .HasForeignKey("ArtistId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("ArtistID"),
+                        .HasConstraintName("ArtistId"),
                     j =>
                     {
                         j.HasKey("ArtistId", "UserId").HasName("Favorite artists_pkey");
                         j.ToTable("Favorite artists");
-                        j.IndexerProperty<int>("ArtistId").HasColumnName("ArtistID");
-                        j.IndexerProperty<int>("UserId").HasColumnName("UserID");
+                        j.IndexerProperty<int>("ArtistId").HasColumnName("ArtistId");
+                        j.IndexerProperty<int>("UserId").HasColumnName("UserId");
                     });
         });
 
