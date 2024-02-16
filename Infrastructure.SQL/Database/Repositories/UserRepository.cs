@@ -35,6 +35,7 @@ public class UserRepository : IUserRepository
     {
         var userEntity = new UserEntity
         {
+            Id = user.Id.Value,
             Nickname = user.Nickname,
             RoleId = user.RoleId,
         };

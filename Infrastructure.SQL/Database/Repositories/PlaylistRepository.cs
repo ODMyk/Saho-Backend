@@ -36,6 +36,7 @@ public class PlaylistRepository : IPlaylistRepository
     {
         var playlistEntity = new PlaylistEntity
         {
+            Id = playlist.Id.Value,
             Title = playlist.Title,
             IsPrivate = playlist.IsPrivate,
             OwnerId = playlist.OwnerId,

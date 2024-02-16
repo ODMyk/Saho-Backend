@@ -36,6 +36,7 @@ public class SongRepository : ISongRepository
     {
         var songEntity = new SongEntity
         {
+            Id = song.Id.Value,
             Title = song.Title,
             TimesPlayed = song.TimesPlayed,
             ArtistId = song.ArtistId,

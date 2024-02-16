@@ -35,6 +35,7 @@ public class AlbumRepository : IAlbumRepository
     {
         var albumEntity = new AlbumEntity
         {
+            Id = album.Id.Value,
             Title = album.Title,
             ArtistId = album.ArtistId,
         };
