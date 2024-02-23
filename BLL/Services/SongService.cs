@@ -31,10 +31,30 @@ public class SongService : ISongService
         {
             return await _songRepository.CreateAsync(song);
         }
-        if (await _songRepository.CreateAsync(song) > 0)
+        if (await _songRepository.UpdateAsync(song) > 0)
         {
             return song.Id.Value;
         }
-        return 0;
+        return -1;
+    }
+
+    public Task<bool> AddToAlbum(int id, AlbumEntity album)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> AddToPlaylist(int id, PlaylistEntity playlist)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> RemoveFromAlbum(int id, AlbumEntity album)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> RemoveFromPlaylist(int id, PlaylistEntity playlist)
+    {
+        throw new NotImplementedException();
     }
 }
