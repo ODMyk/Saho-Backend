@@ -38,23 +38,23 @@ public class SongService : ISongService
         return -1;
     }
 
-    public Task<bool> AddToAlbum(int id, AlbumEntity album)
+    public async Task<bool> AddToAlbum(int id, AlbumEntity album)
     {
-        throw new NotImplementedException();
+        return await _songRepository.AddToAlbum(id, album);
     }
 
-    public Task<bool> AddToPlaylist(int id, PlaylistEntity playlist)
+    public async Task<bool> AddToPlaylist(int id, PlaylistEntity playlist)
     {
-        throw new NotImplementedException();
+        return await _songRepository.AddToPlaylist(id, playlist);
     }
 
-    public Task<bool> RemoveFromAlbum(int id, AlbumEntity album)
+    public async Task<bool> RemoveFromAlbum(int id, AlbumEntity album)
     {
-        throw new NotImplementedException();
+        return await _songRepository.RemoveFromAlbum(id, album);
     }
 
-    public Task<bool> RemoveFromPlaylist(int id, PlaylistEntity playlist)
+    public async Task<bool> RemoveFromPlaylist(int id, PlaylistEntity playlist)
     {
-        throw new NotImplementedException();
+        return await _songRepository.RemoveFromPlaylist(id, playlist);
     }
 }
