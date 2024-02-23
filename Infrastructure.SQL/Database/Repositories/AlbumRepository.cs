@@ -1,7 +1,7 @@
 using Domain.DTOs;
 using Domain.Repositories;
 using Infrastructure.SQL.Database;
-using Infrastructure.SQL.Database.Entities;
+using Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.SQL.Repositories;
@@ -43,13 +43,13 @@ public class AlbumRepository : IAlbumRepository
         return await _context.Albums.Where(x => x.Id == albumEntity.Id).ExecuteUpdateAsync(s => s.SetProperty(p => p.Title, albumEntity.Title).SetProperty(p => p.ArtistId, albumEntity.ArtistId));
     }
 
-    public async Task<AlbumDto> RetrieveAsync(int id)
+    public async Task<AlbumEntity> RetrieveAsync(int id)
     {
-        return await _context.Albums.AsNoTracking().Where(x => x.Id == id).Select(x => new AlbumDto { Id = x.Id, Title = x.Title, ArtistId = x.ArtistId }).FirstOrDefaultAsync();
+        return await _context.Albums.AsNoTracking().Where(x => x.Id == id).Select(x => x).FirstOrDefaultAsync();
     }
 
-    public async Task<IList<AlbumDto>> GetAllAsync()
+    public async Task<IList<AlbumEntity>> GetAllAsync()
     {
-        return await _context.Albums.AsNoTracking().Select(x => new AlbumDto { Id = x.Id, Title = x.Title, ArtistId = x.ArtistId }).ToListAsync();
+        return await _context.Albums.AsNoTracking().Select(x => x).ToListAsync();
     }
 }

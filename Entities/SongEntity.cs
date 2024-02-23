@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Infrastructure.SQL.Database.Entities;
+namespace Entities;
 
 public partial class SongEntity
 {
@@ -13,9 +13,11 @@ public partial class SongEntity
 
     public int TimesPlayed { get; set; }
 
+    public virtual UserEntity Artist { get; set; } = null!;
+
     public virtual ICollection<AlbumEntity> Albums { get; set; } = new List<AlbumEntity>();
 
     public virtual ICollection<PlaylistEntity> Playlists { get; set; } = new List<PlaylistEntity>();
 
-    public virtual ICollection<UserEntity> Users { get; set; } = new List<UserEntity>();
+    public virtual ICollection<UserEntity> LikedByUsers { get; set; } = new List<UserEntity>();
 }

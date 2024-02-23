@@ -2,6 +2,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Infrastructure.SQL\Infrastructure.SQL.csproj" />
+    <ProjectReference Include="..\Entities\Entities.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

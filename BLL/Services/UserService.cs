@@ -1,6 +1,7 @@
 using Domain.DTOs;
 using Domain.Repositories;
 using Domain.Services;
+using Entities;
 
 namespace BLL.Services;
 
@@ -16,11 +17,11 @@ public class UserService : IUserService
         return await _userRepository.DeleteAsync(id) > 0;
     }
 
-    public async Task<IList<UserDto>> GetAllAsync()
+    public async Task<IList<UserEntity>> GetAllAsync()
     {
         return await _userRepository.GetAllAsync();
     }
-    public async Task<UserDto> RetrieveAsync(int id)
+    public async Task<UserEntity> RetrieveAsync(int id)
     {
         return await _userRepository.RetrieveAsync(id);
     }
@@ -30,10 +31,50 @@ public class UserService : IUserService
         {
             return await _userRepository.CreateAsync(user);
         }
-        if (await _userRepository.CreateAsync(user) > 0)
+        if (await _userRepository.UpdateAsync(user) > 0)
         {
             return user.Id.Value;
         }
-        return 0;
+        return -1;
+    }
+
+    public async Task<bool> LikeSong(int id, SongEntity song)
+    {
+        return await _userRepository.LikeSong(id, song);
+    }
+
+    public async Task<bool> LikeArtist(int id, UserEntity artist)
+    {
+        return await _userRepository.LikeArtist(id, artist);
+    }
+
+    public async Task<bool> LikeAlbum(int id, AlbumEntity album)
+    {
+        return await _userRepository.LikeAlbum(id, album);
+    }
+
+    public async Task<bool> LikePlaylist(int id, PlaylistEntity playlist)
+    {
+        return await _userRepository.LikePlaylist(id, playlist);
+    }
+
+    public async Task<bool> UnlikeSong(int id, SongEntity song)
+    {
+        return await _userRepository.UnlikeSong(id, song);
+    }
+
+    public async Task<bool> UnlikeArtist(int id, UserEntity artist)
+    {
+        return await _userRepository.UnlikeArtist(id, artist);
+    }
+
+    public async Task<bool> UnlikeAlbum(int id, AlbumEntity album)
+    {
+        return await _userRepository.UnlikeAlbum(id, album);
+    }
+
+    public async Task<bool> UnlikePlaylist(int id, PlaylistEntity playlist)
+    {
+        return await _userRepository.UnlikePlaylist(id, playlist);
     }
 }

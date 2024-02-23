@@ -1,7 +1,7 @@
 using Domain.DTOs;
 using Domain.Repositories;
 using Infrastructure.SQL.Database;
-using Infrastructure.SQL.Database.Entities;
+using Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.SQL.Repositories;
@@ -45,13 +45,13 @@ public class PlaylistRepository : IPlaylistRepository
         return await _context.Playlists.Where(x => x.Id == playlistEntity.Id).ExecuteUpdateAsync(s => s.SetProperty(p => p.Title, playlistEntity.Title).SetProperty(p => p.IsPrivate, playlistEntity.IsPrivate).SetProperty(p => p.OwnerId, playlistEntity.OwnerId));
     }
 
-    public async Task<PlaylistDto> RetrieveAsync(int id)
+    public async Task<PlaylistEntity> RetrieveAsync(int id)
     {
-        return await _context.Playlists.AsNoTracking().Where(x => x.Id == id).Select(x => new PlaylistDto { Id = x.Id, Title = x.Title, IsPrivate = x.IsPrivate, OwnerId = x.OwnerId }).FirstOrDefaultAsync();
+        return await _context.Playlists.AsNoTracking().Where(x => x.Id == id).Select(x => x).FirstOrDefaultAsync();
     }
 
-    public async Task<IList<PlaylistDto>> GetAllAsync()
+    public async Task<IList<PlaylistEntity>> GetAllAsync()
     {
-        return await _context.Playlists.AsNoTracking().Select(x => new PlaylistDto { Id = x.Id, Title = x.Title, IsPrivate = x.IsPrivate, OwnerId = x.OwnerId }).ToListAsync();
+        return await _context.Playlists.AsNoTracking().Select(x => x).ToListAsync();
     }
 }

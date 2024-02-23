@@ -1,5 +1,4 @@
 namespace Domain.DTOs;
-
 public class SongDto
 {
     public int? Id { get; set; }
