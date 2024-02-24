@@ -10,7 +10,7 @@ public class SongRepository(PostgreDbContext context) : ISongRepository
     private readonly PostgreDbContext _context = context;
 
     public async Task<int> CreateAsync(SongDto song)
-    {   
+    {
         var songEntity = new SongEntity
         {
             Title = song.Title,
@@ -54,53 +54,58 @@ public class SongRepository(PostgreDbContext context) : ISongRepository
     public async Task<bool> AddToAlbum(int id, AlbumEntity album)
     {
         var song = await _context.Songs.Include(s => s.Albums).Where(s => s.Id == id).FirstOrDefaultAsync();
-    
+
         if (song is null)
         {
             return false;
         }
 
-        song.Albums.Add(album);
+        if (song.Albums.Any(a => a.Id == album.Id))
+        {
+            return true;
+        }
 
+        song.Albums.Add(album);
         return await _context.SaveChangesAsync() > 0;
     }
 
     public async Task<bool> AddToPlaylist(int id, PlaylistEntity playlist)
     {
-        var song = await _context.Songs.Include(s => s.Playlists).Where(s => s.Id == id).FirstOrDefaultAsync();;
+        var song = await _context.Songs.Include(s => s.Playlists).Where(s => s.Id == id).FirstOrDefaultAsync(); ;
         if (song is null)
         {
             return false;
         }
 
-        song.Playlists.Add(playlist);
+        if (song.Playlists.Any(p => p.Id == playlist.Id))
+        {
+            return true;
+        }
 
+        song.Playlists.Add(playlist);
         return await _context.SaveChangesAsync() > 0;
     }
 
     public async Task<bool> RemoveFromAlbum(int id, AlbumEntity album)
     {
         var song = await _context.Songs.Include(s => s.Albums).Where(s => s.Id == id).FirstOrDefaultAsync();
-        
-        foreach (var a in song.Albums)
+
+        if (song.Albums.Remove(song.Albums.Where(a => a.Id == album.Id).FirstOrDefault()))
         {
-            if (a.Id == album.Id) {
-                song.Albums.Remove(a);
-                return await _context.SaveChangesAsync() > 0;
-            }
+            return await _context.SaveChangesAsync() > 0;
         }
-        
+
         return true;
     }
 
     public async Task<bool> RemoveFromPlaylist(int id, PlaylistEntity playlist)
     {
         var song = await RetrieveAsync(id);
-        if (song.Playlists.Remove(playlist))
+        if (song.Playlists.Remove(song.Playlists.Where(p => p.Id == playlist.Id).FirstOrDefault()))
         {
             return await _context.SaveChangesAsync() > 0;
         }
-        
+
         return true;
     }
 }

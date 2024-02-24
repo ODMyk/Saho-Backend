@@ -5,14 +5,10 @@ using Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.SQL.Repositories;
-public class PlaylistRepository : IPlaylistRepository
+public class PlaylistRepository(PostgreDbContext context) : IPlaylistRepository
 {
-    private readonly PostgreDbContext _context;
+    private readonly PostgreDbContext _context = context;
 
-    public PlaylistRepository(PostgreDbContext context)
-    {
-        _context = context;
-    }
     public async Task<int> CreateAsync(PlaylistDto playlist)
     {
         var playlistEntity = new PlaylistEntity

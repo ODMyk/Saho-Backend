@@ -5,14 +5,10 @@ using Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.SQL.Repositories;
-public class AlbumRepository : IAlbumRepository
+public class AlbumRepository(PostgreDbContext context) : IAlbumRepository
 {
-    private readonly PostgreDbContext _context;
+    private readonly PostgreDbContext _context = context;
 
-    public AlbumRepository(PostgreDbContext context)
-    {
-        _context = context;
-    }
     public async Task<int> CreateAsync(AlbumDto album)
     {
         var albumEntity = new AlbumEntity
