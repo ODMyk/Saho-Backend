@@ -50,4 +50,14 @@ public class PlaylistRepository(PostgreDbContext context) : IPlaylistRepository
     {
         return await _context.Playlists.AsNoTracking().Select(x => x).ToListAsync();
     }
+
+    public async Task<IList<SongEntity>> GetSongsAsync(int id)
+    {
+        var playlist = await _context.Playlists.AsNoTracking().Include(p => p.Songs).Where(p => p.Id == id).FirstOrDefaultAsync();
+        if (playlist is null) {
+            return null;
+        }
+
+        return [.. playlist.Songs];
+    }
 }

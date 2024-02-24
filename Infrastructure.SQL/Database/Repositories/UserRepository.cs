@@ -187,4 +187,74 @@ public class UserRepository(PostgreDbContext context) : IUserRepository
 
         return true;
     }
+
+    public async Task<IList<UserEntity>> GetLikedArtistsAsync(int id)
+    {
+        var user = await _context.Users.AsNoTracking().Include(u => u.LikedArtists).Where(u => u.Id == id).FirstOrDefaultAsync();
+        if (user is null) {
+            return null;
+        }
+
+        return [.. user.LikedArtists];
+    }
+
+    public async Task<IList<SongEntity>> GetLikedSongsAsync(int id)
+    {
+        var user = await _context.Users.AsNoTracking().Include(u => u.LikedSongs).Where(u => u.Id == id).FirstOrDefaultAsync();
+        if (user is null) {
+            return null;
+        }
+
+        return [.. user.LikedSongs];
+    }
+
+    public async Task<IList<AlbumEntity>> GetLikedAlbumsAsync(int id)
+    {
+        var user = await _context.Users.AsNoTracking().Include(u => u.LikedAlbums).Where(u => u.Id == id).FirstOrDefaultAsync();
+        if (user is null) {
+            return null;
+        }
+
+        return [.. user.LikedAlbums];
+    }
+
+    public async Task<IList<PlaylistEntity>> GetLikedPlaylistsAsync(int id)
+    {
+        var user = await _context.Users.AsNoTracking().Include(u => u.LikedPlaylists).Where(u => u.Id == id).FirstOrDefaultAsync();
+        if (user is null) {
+            return null;
+        }
+
+        return [.. user.LikedPlaylists];
+    }
+
+    public async Task<IList<SongEntity>> GetUserSongsAsync(int id)
+    {
+        var user = await _context.Users.AsNoTracking().Include(u => u.Songs).Where(u => u.Id == id).FirstOrDefaultAsync();
+        if (user is null) {
+            return null;
+        }
+
+        return [.. user.Songs];
+    }
+
+    public async Task<IList<SongEntity>> GetArtistSongsAsync(int id)
+    {
+        var user = await _context.Users.AsNoTracking().Include(u => u.Songs).Where(u => u.Id == id).FirstOrDefaultAsync();
+        if (user is null) {
+            return null;
+        }
+
+        return [.. user.Songs];
+    }
+
+    public async Task<IList<PlaylistEntity>> GetPlaylistsAsync(int id)
+    {
+        var user = await _context.Users.AsNoTracking().Include(u => u.Playlists).Where(u => u.Id == id).FirstOrDefaultAsync();
+        if (user is null) {
+            return null;
+        }
+
+        return [.. user.Playlists];
+    }
 }

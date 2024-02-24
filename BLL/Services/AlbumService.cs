@@ -38,4 +38,9 @@ public class AlbumService : IAlbumService
         }
         return 0;
     }
+
+    public async Task<IList<SongEntity>> GetSongsAsync(int id)
+    {
+        return await _albumRepository.GetSongsAsync(id);
+    }
 }

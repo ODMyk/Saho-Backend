@@ -9,4 +9,6 @@ public interface IAlbumRepository
     Task<int> CreateAsync(AlbumDto album);
     Task<int> UpdateAsync(AlbumDto album);
     Task<int> DeleteAsync(int id);
+
+    Task<IList<SongEntity>> GetSongsAsync(int id);
 }

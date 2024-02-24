@@ -7,4 +7,6 @@ public interface IAlbumService
     Task<IList<AlbumEntity>> GetAllAsync();
     Task<int> CreateOrUpdateAsync(AlbumDto album);
     Task<bool> DeleteAsync(int id);
+
+    Task<IList<SongEntity>> GetSongsAsync(int id);
 }

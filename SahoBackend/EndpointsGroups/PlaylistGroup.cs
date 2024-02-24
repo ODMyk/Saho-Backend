@@ -11,5 +11,6 @@ public static class PlaylistGroup {
         group.MapPost("/", PlaylistEndpoints.PostPlaylist);
         group.MapPut("/", PlaylistEndpoints.PutPlaylist);
         group.MapDelete("/{id}", PlaylistEndpoints.DeletePlaylist);
+        group.MapGet("/{id}/songs", PlaylistEndpoints.GetSongs);
     }
 }

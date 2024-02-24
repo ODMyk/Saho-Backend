@@ -9,4 +9,6 @@ public interface IPlaylistRepository
     Task<int> CreateAsync(PlaylistDto playlist);
     Task<int> UpdateAsync(PlaylistDto playlist);
     Task<int> DeleteAsync(int id);
+
+    Task<IList<SongEntity>> GetSongsAsync(int id);
 }

@@ -11,5 +11,6 @@ public static class AlbumGroup {
         group.MapPost("/", AlbumEndpoints.PostAlbum);
         group.MapPut("/", AlbumEndpoints.PutAlbum);
         group.MapDelete("/{id}", AlbumEndpoints.DeleteAlbum);
+        group.MapGet("/{id}/songs", AlbumEndpoints.GetSongs);
     }
 }

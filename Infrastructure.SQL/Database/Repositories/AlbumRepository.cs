@@ -48,4 +48,14 @@ public class AlbumRepository(PostgreDbContext context) : IAlbumRepository
     {
         return await _context.Albums.AsNoTracking().Select(x => x).ToListAsync();
     }
+
+    public async Task<IList<SongEntity>> GetSongsAsync(int id)
+    {
+        var album = await _context.Albums.AsNoTracking().Include(a => a.Songs).Where(a => a.Id == id).FirstOrDefaultAsync();
+        if (album is null) {
+            return null;
+        }
+
+        return [.. album.Songs];
+    }
 }

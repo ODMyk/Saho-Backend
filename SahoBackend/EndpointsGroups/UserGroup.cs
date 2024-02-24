@@ -13,13 +13,19 @@ public static class UserGroup
         group.MapPut("/", UserEndpoints.PutUser);
         group.MapDelete("/{id}", UserEndpoints.DeleteUserById);
         group.MapGet("/", UserEndpoints.GetAllUsers);
-        group.MapPost("/favourites/songs/{songId}", UserEndpoints.AddSongToFavourites);
-        group.MapPost("/favourites/artists/{artistId}", UserEndpoints.AddArtistToFavourites);
-        group.MapPost("/favourites/playlists/{playlistId}", UserEndpoints.AddPlaylistToFavourites);
-        group.MapPost("/favourites/albums/{albumId}", UserEndpoints.AddAlbumToFavourites);
-        group.MapDelete("/favourites/songs/{songId}", UserEndpoints.RemoveSongFromFavourites);
-        group.MapDelete("/favourites/artists/{artistId}", UserEndpoints.RemoveArtistFromFavourites);
-        group.MapDelete("/favourites/playlists/{playlistId}", UserEndpoints.RemovePlaylistFromFavourites);
-        group.MapDelete("/favourites/albums/{albumId}", UserEndpoints.RemoveAlbumFromFavourites);
+        group.MapPost("/{userId}/favourites/songs", UserEndpoints.AddSongToFavourites);
+        group.MapPost("/{userId}/favourites/artists", UserEndpoints.AddArtistToFavourites);
+        group.MapPost("/{userId}/favourites/playlists", UserEndpoints.AddPlaylistToFavourites);
+        group.MapPost("/{userId}/favourites/albums", UserEndpoints.AddAlbumToFavourites);
+        group.MapDelete("/{userId}/favourites/songs", UserEndpoints.RemoveSongFromFavourites);
+        group.MapDelete("/{userId}/favourites/artists", UserEndpoints.RemoveArtistFromFavourites);
+        group.MapDelete("/{userId}/favourites/playlists/{playlistId}", UserEndpoints.RemovePlaylistFromFavourites);
+        group.MapDelete("/{userId}/favourites/albums", UserEndpoints.RemoveAlbumFromFavourites);
+        group.MapGet("/{userId}/favorites/artists", UserEndpoints.GetLikedArtists);
+        group.MapGet("/{userId}/favorites/songs", UserEndpoints.GetLikedSongs);
+        group.MapGet("/{userId}/favorites/playlists", UserEndpoints.GetLikedPlaylists);
+        group.MapGet("/{userId}/favorites/albums", UserEndpoints.GetLikedAlbums);
+        group.MapGet("/{userId}/usersongs", UserEndpoints.GetUserSongs);
+        group.MapGet("/{artistId}/artistsongs", UserEndpoints.GetArtistSongs);
     }
 }

@@ -100,7 +100,7 @@ public class SongRepository(PostgreDbContext context) : ISongRepository
 
     public async Task<bool> RemoveFromPlaylist(int id, PlaylistEntity playlist)
     {
-        var song = await RetrieveAsync(id);
+        var song = await _context.Songs.Include(s => s.Playlists).Where(s => s.Id == id).FirstOrDefaultAsync();
         if (song.Playlists.Remove(song.Playlists.Where(p => p.Id == playlist.Id).FirstOrDefault()))
         {
             return await _context.SaveChangesAsync() > 0;

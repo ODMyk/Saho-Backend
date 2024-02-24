@@ -45,4 +45,10 @@ public class PlaylistEndpoints
     {
         return await service.DeleteAsync(id) ? Results.NoContent() : Results.NotFound();
     }
+
+    public static async Task<IResult> GetSongs(int id, IPlaylistService service, ISongMapper mapper)
+    {
+        var songs = await service.GetSongsAsync(id);
+        return songs is not null ? Results.Ok((from x in songs select mapper.EntityToDto(x)).ToList()) : Results.NotFound();
+    }
 }

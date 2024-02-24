@@ -61,18 +61,18 @@ public class UserEndpoints
     }
 
     public static async Task<IResult> AddSongToFavourites(
-        int songId,
-        [FromBody] User user,
+        int userId,
+        [FromBody] Song song,
         IUserService userService,
         ISongService songService)
     {
-        if (user.Id is null)
+        if (song.Id is null)
         {
             return Results.NotFound();
         }
 
-        var songEntity = await songService.RetrieveAsync(songId);
-        if (!await userService.LikeSong(user.Id.Value, songEntity))
+        var songEntity = await songService.RetrieveAsync(song.Id.Value);
+        if (!await userService.LikeSong(userId, songEntity))
         {
             return Results.StatusCode(StatusCodes.Status500InternalServerError);
         }
@@ -80,17 +80,17 @@ public class UserEndpoints
     }
 
     public static async Task<IResult> AddArtistToFavourites(
-         int artistId,
-         [FromBody] User user,
+         int userId,
+         [FromBody] User artist,
          IUserService userService)
     {
-        if (user.Id is null)
+        if (artist.Id is null)
         {
             return Results.NotFound();
         }
 
-        var artistEntity = await userService.RetrieveAsync(artistId);
-        if (!await userService.LikeArtist(user.Id.Value, artistEntity))
+        var artistEntity = await userService.RetrieveAsync(artist.Id.Value);
+        if (!await userService.LikeArtist(userId, artistEntity))
         {
             return Results.NotFound();
         }
@@ -99,18 +99,18 @@ public class UserEndpoints
 
 
     public static async Task<IResult> AddAlbumToFavourites(
-        int albumId,
-        [FromBody] User user,
+        int userId,
+        [FromBody] Album album,
         IUserService userService,
         IAlbumService albumService)
     {
-        if (user.Id is null)
+        if (album.Id is null)
         {
             return Results.NotFound();
         }
 
-        var albumEntity = await albumService.RetrieveAsync(albumId);
-        if (!await userService.LikeAlbum(user.Id.Value, albumEntity))
+        var albumEntity = await albumService.RetrieveAsync(album.Id.Value);
+        if (!await userService.LikeAlbum(userId, albumEntity))
         {
             return Results.StatusCode(StatusCodes.Status500InternalServerError);
         }
@@ -118,18 +118,18 @@ public class UserEndpoints
     }
 
     public static async Task<IResult> AddPlaylistToFavourites(
-        int playlistId,
-        [FromBody] User user,
+        int userId,
+        [FromBody] Playlist playlist,
         IUserService userService,
         IPlaylistService playlistService)
     {
-        if (user.Id is null)
+        if (playlist.Id is null)
         {
             return Results.NotFound();
         }
 
-        var playlistEntity = await playlistService.RetrieveAsync(playlistId);
-        if (!await userService.LikePlaylist(user.Id.Value, playlistEntity))
+        var playlistEntity = await playlistService.RetrieveAsync(playlist.Id.Value);
+        if (!await userService.LikePlaylist(userId, playlistEntity))
         {
             return Results.StatusCode(StatusCodes.Status500InternalServerError);
         }
@@ -137,35 +137,35 @@ public class UserEndpoints
     }
 
     public static async Task<IResult> RemoveArtistFromFavourites(
-        int artistId,
-        [FromBody] User user,
+        int userId,
+        [FromBody] User artist,
         IUserService userService)
     {
-        if (user.Id is null)
+        if (artist.Id is null)
         {
             return Results.NotFound();
         }
 
-        var artistEntity = await userService.RetrieveAsync(artistId);
-        if (!await userService.UnlikeArtist(user.Id.Value, artistEntity))
+        var artistEntity = await userService.RetrieveAsync(artist.Id.Value);
+        if (!await userService.UnlikeArtist(userId, artistEntity))
         {
             return Results.StatusCode(StatusCodes.Status500InternalServerError);
         }
         return Results.NoContent();
     }
     public static async Task<IResult> RemoveAlbumFromFavourites(
-        int albumId,
-        [FromBody] User user,
+        int userId,
+        [FromBody] Album album,
         IUserService userService,
         IAlbumService albumService)
     {
-        if (user.Id is null)
+        if (album.Id is null)
         {
             return Results.NotFound();
         }
 
-        var albumEntity = await albumService.RetrieveAsync(albumId);
-        if (!await userService.UnlikeAlbum(user.Id.Value, albumEntity))
+        var albumEntity = await albumService.RetrieveAsync(album.Id.Value);
+        if (!await userService.UnlikeAlbum(userId, albumEntity))
         {
             return Results.StatusCode(StatusCodes.Status500InternalServerError);
         }
@@ -173,18 +173,18 @@ public class UserEndpoints
     }
 
     public static async Task<IResult> RemovePlaylistFromFavourites(
-        int playlistId,
-        [FromBody] User user,
+        int userId,
+        [FromBody] Playlist playlist,
         IUserService userService,
         IPlaylistService playlistService)
     {
-        if (user.Id is null)
+        if (playlist.Id is null)
         {
             return Results.NotFound();
         }
 
-        var playlistEntity = await playlistService.RetrieveAsync(playlistId);
-        if (!await userService.UnlikePlaylist(user.Id.Value, playlistEntity))
+        var playlistEntity = await playlistService.RetrieveAsync(playlist.Id.Value);
+        if (!await userService.UnlikePlaylist(userId, playlistEntity))
         {
             return Results.StatusCode(StatusCodes.Status500InternalServerError);
         }
@@ -192,21 +192,51 @@ public class UserEndpoints
     }
 
     public static async Task<IResult> RemoveSongFromFavourites(
-        int songId,
-        [FromBody] User user,
+        int userId,
+        [FromBody] Song song,
         IUserService userService,
         ISongService songService)
     {
-        if (user.Id is null)
+        if (song.Id is null)
         {
             return Results.NotFound();
         }
 
-        var songEntity = await songService.RetrieveAsync(songId);
-        if (!await userService.UnlikeSong(user.Id.Value, songEntity))
+        var songEntity = await songService.RetrieveAsync(song.Id.Value);
+        if (!await userService.UnlikeSong(userId, songEntity))
         {
             return Results.StatusCode(StatusCodes.Status500InternalServerError);
         }
         return Results.NoContent();
+    }
+
+    public static async Task<IResult> GetLikedArtists(int userId, IUserService service, IUserMapper mapper) {
+        var artists = await service.GetLikedArtistsAsync(userId);
+        return artists is not null ? Results.Ok((from x in artists select mapper.EntityToDto(x)).ToList()) : Results.NotFound();
+    }
+    
+    public static async Task<IResult> GetLikedSongs(int userId, IUserService service, ISongMapper mapper) {
+        var songs = await service.GetLikedSongsAsync(userId);
+        return songs is not null ? Results.Ok((from x in songs select mapper.EntityToDto(x)).ToList()) : Results.NotFound();
+    }
+    
+    public static async Task<IResult> GetLikedAlbums(int userId, IUserService service, IAlbumMapper mapper) {
+        var albums = await service.GetLikedAlbumsAsync(userId);
+        return albums is not null ? Results.Ok((from x in albums select mapper.EntityToDto(x)).ToList()) : Results.NotFound();
+    }
+    
+    public static async Task<IResult> GetLikedPlaylists(int userId, IUserService service, IPlaylistMapper mapper) {
+        var playlists = await service.GetLikedPlaylistsAsync(userId);
+        return playlists is not null ? Results.Ok((from x in playlists select mapper.EntityToDto(x)).ToList()) : Results.NotFound();
+    }
+
+    public static async Task<IResult> GetArtistSongs(int artistId, IUserService service, ISongMapper mapper) {
+        var songs = await service.GetArtistSongsAsync(artistId);
+        return songs is not null ? Results.Ok((from x in songs select mapper.EntityToDto(x)).ToList()) : Results.NotFound();
+    }
+    
+    public static async Task<IResult> GetUserSongs(int userId, IUserService service, ISongMapper mapper) {
+        var songs = await service.GetUserSongsAsync(userId);
+        return songs is not null ? Results.Ok((from x in songs select mapper.EntityToDto(x)).ToList()) : Results.NotFound();
     }
 }

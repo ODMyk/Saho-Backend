@@ -7,4 +7,6 @@ public interface IPlaylistService
     Task<IList<PlaylistEntity>> GetAllAsync();
     Task<int> CreateOrUpdateAsync(PlaylistDto playlist);
     Task<bool> DeleteAsync(int id);
+
+    Task<IList<SongEntity>> GetSongsAsync(int id);
 }

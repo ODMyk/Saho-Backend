@@ -5,6 +5,21 @@ namespace Domain.Repositories;
 public interface IUserRepository
 {
     Task<UserEntity> RetrieveAsync(int id);
+
+    Task<IList<UserEntity>> GetLikedArtistsAsync(int id);
+
+    Task<IList<SongEntity>> GetLikedSongsAsync(int id);
+
+    Task<IList<AlbumEntity>> GetLikedAlbumsAsync(int id);
+
+    Task<IList<PlaylistEntity>> GetLikedPlaylistsAsync(int id);
+
+    Task<IList<SongEntity>> GetUserSongsAsync(int id);
+
+    Task<IList<SongEntity>> GetArtistSongsAsync(int id);
+
+    Task<IList<PlaylistEntity>> GetPlaylistsAsync(int id);
+
     Task<IList<UserEntity>> GetAllAsync();
     Task<int> CreateAsync(UserDto user);
     Task<int> UpdateAsync(UserDto user);

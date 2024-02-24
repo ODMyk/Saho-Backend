@@ -77,4 +77,39 @@ public class UserService : IUserService
     {
         return await _userRepository.UnlikePlaylist(id, playlist);
     }
+
+    public async Task<IList<UserEntity>> GetLikedArtistsAsync(int id)
+    {
+        return await _userRepository.GetLikedArtistsAsync(id);
+    }
+
+    public async Task<IList<SongEntity>> GetLikedSongsAsync(int id)
+    {
+        return await _userRepository.GetLikedSongsAsync(id);
+    }
+
+    public async Task<IList<AlbumEntity>> GetLikedAlbumsAsync(int id)
+    {
+        return await _userRepository.GetLikedAlbumsAsync(id);
+    }
+
+    public async Task<IList<PlaylistEntity>> GetLikedPlaylistsAsync(int id)
+    {
+        return await _userRepository.GetLikedPlaylistsAsync(id);
+    }
+
+    public async Task<IList<SongEntity>> GetUserSongsAsync(int id)
+    {
+        return await _userRepository.GetUserSongsAsync(id);
+    }
+
+    public async Task<IList<SongEntity>> GetArtistSongsAsync(int id)
+    {
+        return await _userRepository.GetArtistSongsAsync(id);
+    }
+
+    public async Task<IList<PlaylistEntity>> GetPlaylistsAsync(int id)
+    {
+        return await _userRepository.GetPlaylistsAsync(id);
+    }
 }
