@@ -9,10 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using SahoBackend.EndpointsGroups;
 
 var builder = WebApplication.CreateBuilder(args);
-var dbconnection = "Host=localhost:5432; Database=SahoDB; Username=postgres; Password=postgres"; // HARDCODE!!!!!!!!
-builder.Services.AddDbContextPool<PostgreDbContext>(options => options.UseNpgsql(dbconnection, npgsqlOptionsAction: sqlOptions => {
-    sqlOptions.EnableRetryOnFailure(maxRetryCount: 3);
-}));
+var dbconnection = "Host=localhost:5432; Database=SahoDB; Username=postgres; Password=postgres";
+builder.Services.AddDbContextPool<PostgreDbContext>(o => o.UseNpgsql(dbconnection, npgsqlOptionsAction: s => s.EnableRetryOnFailure(maxRetryCount: 3)));
 builder.Services.AddScoped<IUserMapper, UserMapper>();
 builder.Services.AddScoped<ISongMapper, SongMapper>();
 builder.Services.AddScoped<IAlbumMapper, AlbumMapper>();

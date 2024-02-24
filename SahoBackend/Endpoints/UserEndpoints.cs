@@ -92,7 +92,7 @@ public class UserEndpoints
         var artistEntity = await userService.RetrieveAsync(artistId);
         if (!await userService.LikeArtist(user.Id.Value, artistEntity))
         {
-            return Results.StatusCode(StatusCodes.Status500InternalServerError);
+            return Results.NotFound();
         }
         return Results.NoContent();
     }
