@@ -31,7 +31,7 @@ public class PlaylistService : IPlaylistService
         {
             return await _playlistRepository.CreateAsync(playlist);
         }
-        if (await _playlistRepository.CreateAsync(playlist) > 0)
+        if (await _playlistRepository.UpdateAsync(playlist) > 0)
         {
             return playlist.Id.Value;
         }

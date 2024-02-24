@@ -10,7 +10,7 @@ public class SongRepository(PostgreDbContext context) : ISongRepository
     private readonly PostgreDbContext _context = context;
 
     public async Task<int> CreateAsync(SongDto song)
-    {
+    {   
         var songEntity = new SongEntity
         {
             Title = song.Title,
@@ -43,7 +43,7 @@ public class SongRepository(PostgreDbContext context) : ISongRepository
 
     public async Task<SongEntity> RetrieveAsync(int id)
     {
-        return await _context.Songs.Where(x => x.Id == id).Select(x => x).FirstOrDefaultAsync();
+        return await _context.Songs.AsNoTracking().Where(x => x.Id == id).Select(x => x).FirstOrDefaultAsync();
     }
 
     public async Task<IList<SongEntity>> GetAllAsync()
@@ -53,7 +53,8 @@ public class SongRepository(PostgreDbContext context) : ISongRepository
 
     public async Task<bool> AddToAlbum(int id, AlbumEntity album)
     {
-        var song = await RetrieveAsync(id);
+        var song = await _context.Songs.Include(s => s.Albums).Where(s => s.Id == id).FirstOrDefaultAsync();
+    
         if (song is null)
         {
             return false;
@@ -66,7 +67,7 @@ public class SongRepository(PostgreDbContext context) : ISongRepository
 
     public async Task<bool> AddToPlaylist(int id, PlaylistEntity playlist)
     {
-        var song = await RetrieveAsync(id);
+        var song = await _context.Songs.Include(s => s.Playlists).Where(s => s.Id == id).FirstOrDefaultAsync();;
         if (song is null)
         {
             return false;
@@ -79,10 +80,14 @@ public class SongRepository(PostgreDbContext context) : ISongRepository
 
     public async Task<bool> RemoveFromAlbum(int id, AlbumEntity album)
     {
-        var song = await RetrieveAsync(id);
-        if (song.Albums.Remove(album))
+        var song = await _context.Songs.Include(s => s.Albums).Where(s => s.Id == id).FirstOrDefaultAsync();
+        
+        foreach (var a in song.Albums)
         {
-            return await _context.SaveChangesAsync() > 0;
+            if (a.Id == album.Id) {
+                song.Albums.Remove(a);
+                return await _context.SaveChangesAsync() > 0;
+            }
         }
         
         return true;
