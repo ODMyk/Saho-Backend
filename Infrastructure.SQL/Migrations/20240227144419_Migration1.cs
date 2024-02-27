@@ -19,7 +19,8 @@ namespace Infrastructure.SQL.Migrations
                 schema: "public",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Title = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
@@ -35,17 +36,14 @@ namespace Infrastructure.SQL.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Nickname = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    RoleId = table.Column<int>(type: "integer", nullable: false)
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Login = table.Column<string>(type: "text", nullable: false),
+                    Password = table.Column<string>(type: "text", nullable: false),
+                    ProfilePicture = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("Users_PK", x => x.Id);
-                    table.ForeignKey(
-                        name: "RoleId_FK",
-                        column: x => x.RoleId,
-                        principalSchema: "public",
-                        principalTable: "Roles",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -62,11 +60,12 @@ namespace Infrastructure.SQL.Migrations
                 {
                     table.PrimaryKey("Albums_PK", x => x.Id);
                     table.ForeignKey(
-                        name: "ArtistId_FK",
+                        name: "Album_ArtistId_FK",
                         column: x => x.ArtistId,
                         principalSchema: "public",
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -81,14 +80,14 @@ namespace Infrastructure.SQL.Migrations
                 {
                     table.PrimaryKey("FavoriteArtists_PK", x => new { x.ArtistId, x.UserId });
                     table.ForeignKey(
-                        name: "ArtistId_FK",
+                        name: "LikedArtists_ArtistId_FK",
                         column: x => x.ArtistId,
                         principalSchema: "public",
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "UserId_FK",
+                        name: "LikedArtists_UserId_FK",
                         column: x => x.UserId,
                         principalSchema: "public",
                         principalTable: "Users",
@@ -111,11 +110,12 @@ namespace Infrastructure.SQL.Migrations
                 {
                     table.PrimaryKey("Playlists_PK", x => x.Id);
                     table.ForeignKey(
-                        name: "OwnerId_FK",
+                        name: "Playlist_OwnerId_FK",
                         column: x => x.OwnerId,
                         principalSchema: "public",
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -133,11 +133,39 @@ namespace Infrastructure.SQL.Migrations
                 {
                     table.PrimaryKey("Songs_PK", x => x.Id);
                     table.ForeignKey(
-                        name: "ArtistId_FK",
+                        name: "Song_ArtistId_FK",
                         column: x => x.ArtistId,
                         principalSchema: "public",
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "User roles",
+                schema: "public",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    RoleId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("UserRoles_PK", x => new { x.UserId, x.RoleId });
+                    table.ForeignKey(
+                        name: "UserRoles_RoleId_FK",
+                        column: x => x.RoleId,
+                        principalSchema: "public",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "UserRoles_UserId_FK",
+                        column: x => x.UserId,
+                        principalSchema: "public",
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -152,14 +180,14 @@ namespace Infrastructure.SQL.Migrations
                 {
                     table.PrimaryKey("FavoriteAlbums_PK", x => new { x.AlbumId, x.UserId });
                     table.ForeignKey(
-                        name: "AlbumId_FK",
+                        name: "LikedAlbums_AlbumId_FK",
                         column: x => x.AlbumId,
                         principalSchema: "public",
                         principalTable: "Albums",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "UserId_FK",
+                        name: "LikedAlbums_UserId_FK",
                         column: x => x.UserId,
                         principalSchema: "public",
                         principalTable: "Users",
@@ -179,14 +207,14 @@ namespace Infrastructure.SQL.Migrations
                 {
                     table.PrimaryKey("FavoritePlaylists_PK", x => new { x.PlaylistId, x.UserId });
                     table.ForeignKey(
-                        name: "PlaylistId_FK",
+                        name: "LikedAlbums_PlaylistId_FK",
                         column: x => x.PlaylistId,
                         principalSchema: "public",
                         principalTable: "Playlists",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "UserId_FK",
+                        name: "LikedAlbums_UserId_FK",
                         column: x => x.UserId,
                         principalSchema: "public",
                         principalTable: "Users",
@@ -206,14 +234,14 @@ namespace Infrastructure.SQL.Migrations
                 {
                     table.PrimaryKey("AlbumSongs_PK", x => new { x.AlbumId, x.SongId });
                     table.ForeignKey(
-                        name: "AlbumId_FK",
+                        name: "AlbumSong_AlbumId_FK",
                         column: x => x.AlbumId,
                         principalSchema: "public",
                         principalTable: "Albums",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "SongId_FK",
+                        name: "AlbumSong_SongId_FK",
                         column: x => x.SongId,
                         principalSchema: "public",
                         principalTable: "Songs",
@@ -233,14 +261,14 @@ namespace Infrastructure.SQL.Migrations
                 {
                     table.PrimaryKey("FavoriteSongs_PK", x => new { x.SongId, x.UserId });
                     table.ForeignKey(
-                        name: "SongId_FK",
+                        name: "LikedSongs_SongId_FK",
                         column: x => x.SongId,
                         principalSchema: "public",
                         principalTable: "Songs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "UserId_FK",
+                        name: "LikedSongs_UserId_FK",
                         column: x => x.UserId,
                         principalSchema: "public",
                         principalTable: "Users",
@@ -260,14 +288,14 @@ namespace Infrastructure.SQL.Migrations
                 {
                     table.PrimaryKey("PlaylistSongs_PK", x => new { x.PlaylistId, x.SongId });
                     table.ForeignKey(
-                        name: "PlaylistId_FK",
+                        name: "PlaylistSong_PlaylistId_FK",
                         column: x => x.PlaylistId,
                         principalSchema: "public",
                         principalTable: "Playlists",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "SongId_FK",
+                        name: "PlaylistSong_SongId_FK",
                         column: x => x.SongId,
                         principalSchema: "public",
                         principalTable: "Songs",
@@ -330,9 +358,9 @@ namespace Infrastructure.SQL.Migrations
                 column: "ArtistId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_RoleId",
+                name: "IX_User roles_RoleId",
                 schema: "public",
-                table: "Users",
+                table: "User roles",
                 column: "RoleId");
         }
 
@@ -364,6 +392,10 @@ namespace Infrastructure.SQL.Migrations
                 schema: "public");
 
             migrationBuilder.DropTable(
+                name: "User roles",
+                schema: "public");
+
+            migrationBuilder.DropTable(
                 name: "Albums",
                 schema: "public");
 
@@ -376,11 +408,11 @@ namespace Infrastructure.SQL.Migrations
                 schema: "public");
 
             migrationBuilder.DropTable(
-                name: "Users",
+                name: "Roles",
                 schema: "public");
 
             migrationBuilder.DropTable(
-                name: "Roles",
+                name: "Users",
                 schema: "public");
         }
     }

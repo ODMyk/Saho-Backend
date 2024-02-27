@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.SQL.Migrations
 {
     [DbContext(typeof(PostgreDbContext))]
-    [Migration("20240224121158_Migration1")]
+    [Migration("20240227144419_Migration1")]
     partial class Migration1
     {
         /// <inheritdoc />
@@ -100,8 +100,11 @@ namespace Infrastructure.SQL.Migrations
             modelBuilder.Entity("Entities.RoleEntity", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasColumnName("Id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -152,19 +155,29 @@ namespace Infrastructure.SQL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Nickname")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("integer")
-                        .HasColumnName("RoleId");
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProfilePicture")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id")
                         .HasName("Users_PK");
-
-                    b.HasIndex("RoleId");
 
                     b.ToTable("Users", "public");
                 });
@@ -259,6 +272,24 @@ namespace Infrastructure.SQL.Migrations
                     b.ToTable("Playlist songs", "public");
                 });
 
+            modelBuilder.Entity("UserRoles", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UserId");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer")
+                        .HasColumnName("RoleId");
+
+                    b.HasKey("UserId", "RoleId")
+                        .HasName("UserRoles_PK");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("User roles", "public");
+                });
+
             modelBuilder.Entity("AlbumSong", b =>
                 {
                     b.HasOne("Entities.AlbumEntity", null)
@@ -266,14 +297,14 @@ namespace Infrastructure.SQL.Migrations
                         .HasForeignKey("AlbumId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("AlbumId_FK");
+                        .HasConstraintName("AlbumSong_AlbumId_FK");
 
                     b.HasOne("Entities.SongEntity", null)
                         .WithMany()
                         .HasForeignKey("SongId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("SongId_FK");
+                        .HasConstraintName("AlbumSong_SongId_FK");
                 });
 
             modelBuilder.Entity("Entities.AlbumEntity", b =>
@@ -281,8 +312,9 @@ namespace Infrastructure.SQL.Migrations
                     b.HasOne("Entities.UserEntity", "Artist")
                         .WithMany("Albums")
                         .HasForeignKey("ArtistId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("ArtistId_FK");
+                        .HasConstraintName("Album_ArtistId_FK");
 
                     b.Navigation("Artist");
                 });
@@ -290,10 +322,11 @@ namespace Infrastructure.SQL.Migrations
             modelBuilder.Entity("Entities.PlaylistEntity", b =>
                 {
                     b.HasOne("Entities.UserEntity", "Owner")
-                        .WithMany("LikedPlaylists")
+                        .WithMany("Playlists")
                         .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("OwnerId_FK");
+                        .HasConstraintName("Playlist_OwnerId_FK");
 
                     b.Navigation("Owner");
                 });
@@ -303,21 +336,11 @@ namespace Infrastructure.SQL.Migrations
                     b.HasOne("Entities.UserEntity", "Artist")
                         .WithMany("Songs")
                         .HasForeignKey("ArtistId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("ArtistId_FK");
+                        .HasConstraintName("Song_ArtistId_FK");
 
                     b.Navigation("Artist");
-                });
-
-            modelBuilder.Entity("Entities.UserEntity", b =>
-                {
-                    b.HasOne("Entities.RoleEntity", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .IsRequired()
-                        .HasConstraintName("RoleId_FK");
-
-                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("FavoriteAlbum", b =>
@@ -327,14 +350,14 @@ namespace Infrastructure.SQL.Migrations
                         .HasForeignKey("AlbumId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("AlbumId_FK");
+                        .HasConstraintName("LikedAlbums_AlbumId_FK");
 
                     b.HasOne("Entities.UserEntity", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("UserId_FK");
+                        .HasConstraintName("LikedAlbums_UserId_FK");
                 });
 
             modelBuilder.Entity("FavoriteArtist", b =>
@@ -344,14 +367,14 @@ namespace Infrastructure.SQL.Migrations
                         .HasForeignKey("ArtistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("ArtistId_FK");
+                        .HasConstraintName("LikedArtists_ArtistId_FK");
 
                     b.HasOne("Entities.UserEntity", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("UserId_FK");
+                        .HasConstraintName("LikedArtists_UserId_FK");
                 });
 
             modelBuilder.Entity("FavoritePlaylist", b =>
@@ -361,14 +384,14 @@ namespace Infrastructure.SQL.Migrations
                         .HasForeignKey("PlaylistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("PlaylistId_FK");
+                        .HasConstraintName("LikedAlbums_PlaylistId_FK");
 
                     b.HasOne("Entities.UserEntity", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("UserId_FK");
+                        .HasConstraintName("LikedAlbums_UserId_FK");
                 });
 
             modelBuilder.Entity("FavoriteSong", b =>
@@ -378,14 +401,14 @@ namespace Infrastructure.SQL.Migrations
                         .HasForeignKey("SongId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("SongId_FK");
+                        .HasConstraintName("LikedSongs_SongId_FK");
 
                     b.HasOne("Entities.UserEntity", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("UserId_FK");
+                        .HasConstraintName("LikedSongs_UserId_FK");
                 });
 
             modelBuilder.Entity("PlaylistSong", b =>
@@ -395,26 +418,38 @@ namespace Infrastructure.SQL.Migrations
                         .HasForeignKey("PlaylistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("PlaylistId_FK");
+                        .HasConstraintName("PlaylistSong_PlaylistId_FK");
 
                     b.HasOne("Entities.SongEntity", null)
                         .WithMany()
                         .HasForeignKey("SongId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("SongId_FK");
+                        .HasConstraintName("PlaylistSong_SongId_FK");
                 });
 
-            modelBuilder.Entity("Entities.RoleEntity", b =>
+            modelBuilder.Entity("UserRoles", b =>
                 {
-                    b.Navigation("Users");
+                    b.HasOne("Entities.UserEntity", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("UserRoles_RoleId_FK");
+
+                    b.HasOne("Entities.RoleEntity", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("UserRoles_UserId_FK");
                 });
 
             modelBuilder.Entity("Entities.UserEntity", b =>
                 {
                     b.Navigation("Albums");
 
-                    b.Navigation("LikedPlaylists");
+                    b.Navigation("Playlists");
 
                     b.Navigation("Songs");
                 });

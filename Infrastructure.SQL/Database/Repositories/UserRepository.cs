@@ -3,40 +3,29 @@ using Domain.Repositories;
 using Infrastructure.SQL.Database;
 using Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System.Diagnostics;
 
 namespace Infrastructure.SQL.Repositories;
 public class UserRepository(PostgreDbContext context) : IUserRepository
 {
     private readonly PostgreDbContext _context = context;
 
-    public async Task<int> CreateAsync(UserDto user)
-    {
-        var userEntity = new UserEntity
-        {
-            Nickname = user.Nickname,
-            RoleId = user.RoleId,
-        };
-        await _context.AddAsync(userEntity);
-        await _context.SaveChangesAsync();
-
-        return userEntity.Id;
-    }
-
     public async Task<int> DeleteAsync(int id)
     {
         return await _context.Users.Where(x => x.Id == id).ExecuteDeleteAsync();
     }
 
-    public async Task<int> UpdateAsync(UserDto user)
+    public async Task<int> UpdateAsync(ExtendedUserDTO user)
     {
         var userEntity = new UserEntity
         {
             Id = user.Id.Value,
             Nickname = user.Nickname,
-            RoleId = user.RoleId,
+
         };
 
-        return await _context.Users.Where(x => x.Id == user.Id).ExecuteUpdateAsync(s => s.SetProperty(p => p.Nickname, userEntity.Nickname).SetProperty(p => p.RoleId, user.RoleId));
+        return await _context.Users.Where(x => x.Id == user.Id).ExecuteUpdateAsync(s => s.SetProperty(p => p.Nickname, userEntity.Nickname));
     }
 
     public async Task<UserEntity> RetrieveAsync(int id)
@@ -191,7 +180,8 @@ public class UserRepository(PostgreDbContext context) : IUserRepository
     public async Task<IList<UserEntity>> GetLikedArtistsAsync(int id)
     {
         var user = await _context.Users.AsNoTracking().Include(u => u.LikedArtists).Where(u => u.Id == id).FirstOrDefaultAsync();
-        if (user is null) {
+        if (user is null)
+        {
             return null;
         }
 
@@ -201,7 +191,8 @@ public class UserRepository(PostgreDbContext context) : IUserRepository
     public async Task<IList<SongEntity>> GetLikedSongsAsync(int id)
     {
         var user = await _context.Users.AsNoTracking().Include(u => u.LikedSongs).Where(u => u.Id == id).FirstOrDefaultAsync();
-        if (user is null) {
+        if (user is null)
+        {
             return null;
         }
 
@@ -211,7 +202,8 @@ public class UserRepository(PostgreDbContext context) : IUserRepository
     public async Task<IList<AlbumEntity>> GetLikedAlbumsAsync(int id)
     {
         var user = await _context.Users.AsNoTracking().Include(u => u.LikedAlbums).Where(u => u.Id == id).FirstOrDefaultAsync();
-        if (user is null) {
+        if (user is null)
+        {
             return null;
         }
 
@@ -221,7 +213,8 @@ public class UserRepository(PostgreDbContext context) : IUserRepository
     public async Task<IList<PlaylistEntity>> GetLikedPlaylistsAsync(int id)
     {
         var user = await _context.Users.AsNoTracking().Include(u => u.LikedPlaylists).Where(u => u.Id == id).FirstOrDefaultAsync();
-        if (user is null) {
+        if (user is null)
+        {
             return null;
         }
 
@@ -231,7 +224,8 @@ public class UserRepository(PostgreDbContext context) : IUserRepository
     public async Task<IList<SongEntity>> GetUserSongsAsync(int id)
     {
         var user = await _context.Users.AsNoTracking().Include(u => u.Songs).Where(u => u.Id == id).FirstOrDefaultAsync();
-        if (user is null) {
+        if (user is null)
+        {
             return null;
         }
 
@@ -241,7 +235,8 @@ public class UserRepository(PostgreDbContext context) : IUserRepository
     public async Task<IList<SongEntity>> GetArtistSongsAsync(int id)
     {
         var user = await _context.Users.AsNoTracking().Include(u => u.Songs).Where(u => u.Id == id).FirstOrDefaultAsync();
-        if (user is null) {
+        if (user is null)
+        {
             return null;
         }
 
@@ -251,10 +246,31 @@ public class UserRepository(PostgreDbContext context) : IUserRepository
     public async Task<IList<PlaylistEntity>> GetPlaylistsAsync(int id)
     {
         var user = await _context.Users.AsNoTracking().Include(u => u.Playlists).Where(u => u.Id == id).FirstOrDefaultAsync();
-        if (user is null) {
+        if (user is null)
+        {
             return null;
         }
 
         return [.. user.Playlists];
+    }
+
+    public async Task<UserEntity> FindByLogin(string login)
+    {
+        return await _context.Users.AsNoTracking().Include(u => u.Roles).Where(u => u.Login == login || u.Email == login).FirstOrDefaultAsync();
+    }
+
+    public async Task CreateAsync(RegisterCredentialsDTO dto)
+    {
+        var user = new UserEntity
+        {
+            Nickname = dto.Nickname,
+            Email = dto.Email,
+            Login = dto.Login,
+            Password = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+            ProfilePicture = $"http://{Configuration.SahoConfig.Host}/storage/{dto.Nickname}/profile.png"
+        };
+        await _context.Users.AddAsync(user);
+        user.Roles.Add(await _context.Roles.Where(x => x.Id == 1).FirstOrDefaultAsync());
+        await _context.SaveChangesAsync();
     }
 }
