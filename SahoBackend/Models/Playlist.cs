@@ -7,10 +7,8 @@ public class Playlist
     public int? Id { get; set; }
 
     [Required]
+    [RegularExpression(@"^[A-Za-z0-9\s\-_,\.&:;()''""]+$")]
     public string Title { get; set; }
-
-    [Required]
-    public int OwnerId { get; set; }
 
     [Required]
     public bool IsPrivate { get; set; }

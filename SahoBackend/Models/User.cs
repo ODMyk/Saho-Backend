@@ -8,5 +8,6 @@ public class User
     public int? Id { get; set; }
 
     [Required]
+    [RegularExpression(@"^[A-Za-z0-9\s\-_,\.&:;()''""]+$")]
     public string Nickname { get; set; }
 }

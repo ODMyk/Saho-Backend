@@ -5,13 +5,8 @@ public class Song
 {
     [Required]
     public int? Id { get; set; }
-    
-    [Required]
-    public string Title { get; set; }
-    
-    [Required]
-    public int ArtistId { get; set; }
 
     [Required]
-    public int TimesPlayed { get; set; }
+    [RegularExpression(@"^[A-Za-z0-9\s\-_,\.&:;()''""]+$")]
+    public string Title { get; set; }
 }
