@@ -31,8 +31,6 @@ public class SongMapper : ISongMapper
         return song is not null ? new SongDto {
             Id = song.Id,
             Title = song.Title,
-            ArtistId = song.ArtistId,
-            TimesPlayed = song.TimesPlayed,
         } : null;
     }
 }

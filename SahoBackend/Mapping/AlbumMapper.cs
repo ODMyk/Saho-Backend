@@ -12,7 +12,7 @@ public class AlbumMapper : IAlbumMapper
         return album is not null ? new AlbumEntity {
             Id = album.Id.Value,
             Title = album.Title,
-            ArtistId = album.ArtistId,
+            ArtistId = album.ArtistId
         } : null;
     }
 
@@ -29,7 +29,6 @@ public class AlbumMapper : IAlbumMapper
         return album is not null ? new AlbumDto {
             Id = album.Id,
             Title = album.Title,
-            ArtistId = album.ArtistId,
         } : null;
     }
 }

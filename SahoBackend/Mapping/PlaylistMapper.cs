@@ -31,7 +31,6 @@ public class PlaylistMapper : IPlaylistMapper
         return playlist is not null ? new PlaylistDto {
             Id = playlist.Id,
             Title = playlist.Title,
-            OwnerId = playlist.OwnerId,
             IsPrivate = playlist.IsPrivate,
         } : null;
     }

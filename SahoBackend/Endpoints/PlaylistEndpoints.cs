@@ -1,4 +1,6 @@
+using System.Net;
 using Domain.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using SahoBackend.Mapping.Interfaces;
 using SahoBackend.Models;
@@ -18,14 +20,26 @@ public class PlaylistEndpoints
         return Results.Ok((from x in await service.GetAllAsync() select mapper.EntityToDto(x)).ToList());
     }
 
-    public static async Task<IResult> PostPlaylist([FromBody] Playlist playlist, IPlaylistService service, IPlaylistMapper mapper)
+    public static async Task<IResult> PostPlaylist([FromBody] Playlist playlist, IPlaylistService service, IPlaylistMapper mapper, IValidator<Playlist> validator)
     {
+        var validationResult = validator.Validate(playlist);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
         var dto = mapper.ModelToDto(playlist);
         return Results.CreatedAtRoute("playlistById", new { Id = await service.CreateOrUpdateAsync(dto) });
     }
 
-    public static async Task<IResult> PutPlaylist([FromBody] Playlist playlist, IPlaylistService service, IPlaylistMapper mapper)
+    public static async Task<IResult> PutPlaylist([FromBody] Playlist playlist, IPlaylistService service, IPlaylistMapper mapper, IValidator<Playlist> validator)
     {
+        var validationResult = validator.Validate(playlist);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
         var dto = mapper.ModelToDto(playlist);
         var id = await service.CreateOrUpdateAsync(dto);
 

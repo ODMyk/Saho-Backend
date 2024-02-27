@@ -1,5 +1,6 @@
 using Domain.Repositories;
 using Domain.Services;
+using FluentValidation;
 using BLL.Services;
 using Infrastructure.SQL.Repositories;
 using Infrastructure.SQL.Database;
@@ -13,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 
 var key = Encoding.UTF8.GetBytes(Configuration.SahoConfig.JwtSecret);
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddDbContextPool<PostgreDbContext>(o => o.UseNpgsql(Configuration.SahoConfig.PostgreConnectionString, npgsqlOptionsAction: s => s.EnableRetryOnFailure(maxRetryCount: 3)));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
     options.TokenValidationParameters = new TokenValidationParameters {
