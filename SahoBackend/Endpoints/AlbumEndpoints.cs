@@ -1,4 +1,6 @@
+using System.Net;
 using Domain.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using SahoBackend.Mapping.Interfaces;
 using SahoBackend.Models;
@@ -18,14 +20,26 @@ public class AlbumEndpoints
         return Results.Ok((from x in await service.GetAllAsync() select mapper.EntityToDto(x)).ToList());
     }
 
-    public static async Task<IResult> PostAlbum([FromBody] Album album, IAlbumService service, IAlbumMapper mapper)
+    public static async Task<IResult> PostAlbum([FromBody] Album album, IAlbumService service, IAlbumMapper mapper, IValidator<Album> validator)
     {
+        var validationResult = validator.Validate(album);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
         var dto = mapper.ModelToDto(album);
         return Results.CreatedAtRoute("albumById", new { Id = await service.CreateOrUpdateAsync(dto) });
     }
 
-    public static async Task<IResult> PutAlbum([FromBody] Album album, IAlbumService service, IAlbumMapper mapper)
+    public static async Task<IResult> PutAlbum([FromBody] Album album, IAlbumService service, IAlbumMapper mapper, IValidator<Album> validator)
     {
+        var validationResult = validator.Validate(album);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
         var dto = mapper.ModelToDto(album);
         var id = await service.CreateOrUpdateAsync(dto);
 

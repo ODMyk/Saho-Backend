@@ -4,6 +4,8 @@ using Domain.Services;
 // using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Domain.DTOs;
+using FluentValidation;
+using System.Net;
 
 namespace SahoBackend.Endpoints;
 
@@ -21,8 +23,15 @@ public class UserEndpoints
     public static async Task<IResult> PutUser(
         [FromBody] User user,
         IUserMapper mapper,
-        IUserService userService)
+        IUserService userService,
+        IValidator<User> validator)
     {
+        var validationResult = validator.Validate(user);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
         var userDto = mapper.ModelToDto(user);
         var dto = new ExtendedUserDTO {Nickname = userDto.Nickname, ProfilePicture = userDto.ProfilePicture, Email = null!, Login=null!};
         var id = await userService.UpdateAsync(dto);
@@ -57,8 +66,15 @@ public class UserEndpoints
         int userId,
         [FromBody] Song song,
         IUserService userService,
-        ISongService songService)
+        ISongService songService,
+        IValidator<Song> validator)
     {
+        var validationResult = validator.Validate(song);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
         if (song.Id is null)
         {
             return Results.NotFound();
@@ -75,8 +91,15 @@ public class UserEndpoints
     public static async Task<IResult> AddArtistToFavourites(
          int userId,
          [FromBody] User artist,
-         IUserService userService)
+         IUserService userService,
+         IValidator<User> validator)
     {
+        var validationResult = validator.Validate(artist);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
         if (artist.Id is null)
         {
             return Results.NotFound();
@@ -95,8 +118,15 @@ public class UserEndpoints
         int userId,
         [FromBody] Album album,
         IUserService userService,
-        IAlbumService albumService)
+        IAlbumService albumService,
+        IValidator<Album> validator)
     {
+        var validationResult = validator.Validate(album);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
         if (album.Id is null)
         {
             return Results.NotFound();
@@ -114,8 +144,15 @@ public class UserEndpoints
         int userId,
         [FromBody] Playlist playlist,
         IUserService userService,
-        IPlaylistService playlistService)
+        IPlaylistService playlistService,
+        IValidator<Playlist> validator)
     {
+        var validationResult = validator.Validate(playlist);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
         if (playlist.Id is null)
         {
             return Results.NotFound();
@@ -135,8 +172,15 @@ public class UserEndpoints
     public static async Task<IResult> RemoveArtistFromFavourites(
         int userId,
         [FromBody] User artist,
-        IUserService userService)
+        IUserService userService,
+        IValidator<User> validator)
     {
+        var validationResult = validator.Validate(artist);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
         if (artist.Id is null)
         {
             return Results.NotFound();
@@ -153,8 +197,15 @@ public class UserEndpoints
         int userId,
         [FromBody] Album album,
         IUserService userService,
-        IAlbumService albumService)
+        IAlbumService albumService,
+        IValidator<Album> validator)
     {
+        var validationResult = validator.Validate(album);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
         if (album.Id is null)
         {
             return Results.NotFound();
@@ -172,8 +223,15 @@ public class UserEndpoints
         int userId,
         [FromBody] Playlist playlist,
         IUserService userService,
-        IPlaylistService playlistService)
+        IPlaylistService playlistService,
+        IValidator<Playlist> validator)
     {
+        var validationResult = validator.Validate(playlist);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
         if (playlist.Id is null)
         {
             return Results.NotFound();
@@ -191,8 +249,15 @@ public class UserEndpoints
         int userId,
         [FromBody] Song song,
         IUserService userService,
-        ISongService songService)
+        ISongService songService,
+        IValidator<Song> validator)
     {
+        var validationResult = validator.Validate(song);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
         if (song.Id is null)
         {
             return Results.NotFound();

@@ -1,8 +1,10 @@
 using Domain.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using SahoBackend.Mapping.Interfaces;
 using SahoBackend.Models;
 using System.Diagnostics;
+using System.Net;
 
 namespace SahoBackend.Endpoints;
 
@@ -19,14 +21,26 @@ public class SongEndpoints
         return Results.Ok((from x in await service.GetAllAsync() select mapper.EntityToDto(x)).ToList());
     }
 
-    public static async Task<IResult> PostSong([FromBody] Song song, ISongService service, ISongMapper mapper)
+    public static async Task<IResult> PostSong([FromBody] Song song, ISongService service, ISongMapper mapper, IValidator<Song> validator)
     {
+        var validationResult = validator.Validate(song);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
         var dto = mapper.ModelToDto(song);
         return Results.CreatedAtRoute("songById", new { Id = await service.CreateOrUpdateAsync(dto) });
     }
 
-    public static async Task<IResult> PutSong([FromBody] Song song, ISongService service, ISongMapper mapper)
+    public static async Task<IResult> PutSong([FromBody] Song song, ISongService service, ISongMapper mapper, IValidator<Song> validator)
     {
+        var validationResult = validator.Validate(song);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
         var dto = mapper.ModelToDto(song);
         var id = await service.CreateOrUpdateAsync(dto);
 
@@ -47,26 +61,50 @@ public class SongEndpoints
         return await service.DeleteAsync(id) ? Results.NoContent() : Results.NotFound();
     }
 
-    public static async Task<IResult> AddToAlbum(int id, [FromBody] Album album, ISongService songService, IAlbumService albumService) {
-        if (album.Id is null) {
+    public static async Task<IResult> AddToAlbum(int id, [FromBody] Album album, ISongService songService, IAlbumService albumService, IValidator<Album> validator)
+    {
+        var validationResult = validator.Validate(album);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
+        if (album.Id is null)
+        {
             return Results.NotFound();
         }
 
-         var albumEntity = await albumService.RetrieveAsync(album.Id.Value);
-         return await songService.AddToAlbum(id, albumEntity) ? Results.NoContent() : Results.NotFound();
+        var albumEntity = await albumService.RetrieveAsync(album.Id.Value);
+        return await songService.AddToAlbum(id, albumEntity) ? Results.NoContent() : Results.NotFound();
     }
 
-    public static async Task<IResult> AddToPlaylist(int id, [FromBody] Playlist playlist, ISongService songService, IPlaylistService playlistService) {
-        if (playlist.Id is null) {
+    public static async Task<IResult> AddToPlaylist(int id, [FromBody] Playlist playlist, ISongService songService, IPlaylistService playlistService, IValidator<Playlist> validator)
+    {
+        var validationResult = validator.Validate(playlist);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
+        if (playlist.Id is null)
+        {
             return Results.NotFound();
         }
 
-         var playlistEntity = await playlistService.RetrieveAsync(playlist.Id.Value);
-         return await songService.AddToPlaylist(id, playlistEntity) ? Results.NoContent() : Results.NotFound();
+        var playlistEntity = await playlistService.RetrieveAsync(playlist.Id.Value);
+        return await songService.AddToPlaylist(id, playlistEntity) ? Results.NoContent() : Results.NotFound();
     }
 
-    public static async Task<IResult> RemoveFromAlbum(int id, [FromBody] Album album, ISongService songService, IAlbumService albumService) {
-        if (album.Id is null) {
+    public static async Task<IResult> RemoveFromAlbum(int id, [FromBody] Album album, ISongService songService, IAlbumService albumService, IValidator<Album> validator)
+    {
+        var validationResult = validator.Validate(album);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
+        if (album.Id is null)
+        {
             return Results.NotFound();
         }
 
@@ -74,8 +112,16 @@ public class SongEndpoints
         return await songService.RemoveFromAlbum(id, albumEntity) ? Results.NoContent() : Results.NotFound();
     }
 
-    public static async Task<IResult> RemoveFromPlaylist(int id, [FromBody] Playlist playlist, ISongService songService, IPlaylistService playlistService) {
-        if (playlist.Id is null) {
+    public static async Task<IResult> RemoveFromPlaylist(int id, [FromBody] Playlist playlist, ISongService songService, IPlaylistService playlistService, IValidator<Playlist> validator)
+    {
+        var validationResult = validator.Validate(playlist);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
+        if (playlist.Id is null)
+        {
             return Results.NotFound();
         }
 
