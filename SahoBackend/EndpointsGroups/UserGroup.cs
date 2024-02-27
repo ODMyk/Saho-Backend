@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using SahoBackend.Endpoints;
 
 namespace SahoBackend.EndpointsGroups;
@@ -9,10 +10,9 @@ public static class UserGroup
         var group = app.MapGroup("/users");
 
         group.MapGet("/{id}", UserEndpoints.GetUserById).WithName("userById");
-        group.MapPost("/", UserEndpoints.PostUser);
         group.MapPut("/", UserEndpoints.PutUser);
         group.MapDelete("/{id}", UserEndpoints.DeleteUserById);
-        group.MapGet("/", UserEndpoints.GetAllUsers);
+        group.MapGet("/", UserEndpoints.GetAllUsers).RequireAuthorization(new AuthorizeAttribute {Policy = "UserPolicy"});
         group.MapPost("/{userId}/favourites/songs", UserEndpoints.AddSongToFavourites);
         group.MapPost("/{userId}/favourites/artists", UserEndpoints.AddArtistToFavourites);
         group.MapPost("/{userId}/favourites/playlists", UserEndpoints.AddPlaylistToFavourites);

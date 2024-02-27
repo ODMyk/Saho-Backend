@@ -11,8 +11,6 @@ public class UserMapper : IUserMapper
     {
         return user is not null ? new UserEntity {
             Id = user.Id.Value,
-            Nickname = user.Nickname,
-            RoleId = user.RoleId
         } : null;
     }
 
@@ -20,7 +18,7 @@ public class UserMapper : IUserMapper
         return user is not null ? new UserDto {
             Id = user.Id,
             Nickname = user.Nickname,
-            RoleId = user.RoleId
+            ProfilePicture = user.ProfilePicture
         } : null;
     }
 
@@ -29,7 +27,6 @@ public class UserMapper : IUserMapper
         return user is not null ? new UserDto {
             Id = user.Id,
             Nickname = user.Nickname,
-            RoleId = user.RoleId 
         } : null;
     }
 }

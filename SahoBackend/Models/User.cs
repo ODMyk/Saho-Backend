@@ -9,7 +9,4 @@ public class User
 
     [Required]
     public string Nickname { get; set; }
-
-    [Required]
-    public int RoleId { get; set; }
 }

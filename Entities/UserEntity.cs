@@ -9,23 +9,29 @@ public partial class UserEntity
 
     public string Nickname { get; set; } = null!;
 
-    public int RoleId { get; set; }
+    public string Email { get; set; } = null!;
 
-    public virtual RoleEntity Role { get; set; } = null!;
+    public string Login { get; set; } = null!;
 
-    public virtual ICollection<UserEntity> LikedByUsers { get; set; } = new List<UserEntity>();
+    public string Password { get; set; } = null!;
 
-    public virtual ICollection<UserEntity> LikedArtists { get; set; } = new List<UserEntity>();
-    
-    public virtual ICollection<SongEntity> Songs { get; set; } = new List<SongEntity>();
+    public string ProfilePicture { get; set; } = null!;
 
-    public virtual ICollection<SongEntity> LikedSongs { get; set; } = new List<SongEntity>();
+    public virtual ICollection<RoleEntity> Roles { get; set; } = [];
 
-    public virtual ICollection<AlbumEntity> Albums { get; set; } = new List<AlbumEntity>();
+    public virtual ICollection<UserEntity> LikedByUsers { get; set; } = [];
 
-    public virtual ICollection<AlbumEntity> LikedAlbums { get; set; } = new List<AlbumEntity>();
+    public virtual ICollection<UserEntity> LikedArtists { get; set; } = [];
 
-    public virtual ICollection<PlaylistEntity> Playlists { get; set; } = new List<PlaylistEntity>();
+    public virtual ICollection<SongEntity> Songs { get; set; } = [];
 
-    public virtual ICollection<PlaylistEntity> LikedPlaylists { get; set; } = new List<PlaylistEntity>();
+    public virtual ICollection<SongEntity> LikedSongs { get; set; } = [];
+
+    public virtual ICollection<AlbumEntity> Albums { get; set; } = [];
+
+    public virtual ICollection<AlbumEntity> LikedAlbums { get; set; } = [];
+
+    public virtual ICollection<PlaylistEntity> Playlists { get; set; } = [];
+
+    public virtual ICollection<PlaylistEntity> LikedPlaylists { get; set; } = [];
 }

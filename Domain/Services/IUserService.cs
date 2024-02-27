@@ -6,6 +6,10 @@ public interface IUserService
 {
     Task<UserEntity> RetrieveAsync(int id);
 
+    Task<UserEntity> FindByLogin(string login);
+
+    Task CreateAsync(RegisterCredentialsDTO dto);
+
     Task<IList<UserEntity>> GetLikedArtistsAsync(int id);
 
     Task<IList<SongEntity>> GetLikedSongsAsync(int id);
@@ -21,7 +25,7 @@ public interface IUserService
     Task<IList<PlaylistEntity>> GetPlaylistsAsync(int id);
 
     Task<IList<UserEntity>> GetAllAsync();
-    Task<int> CreateOrUpdateAsync(UserDto user);
+    Task<int> UpdateAsync(ExtendedUserDTO user);
     Task<bool> DeleteAsync(int id);
 
     Task<bool> LikeSong(int id, SongEntity song);

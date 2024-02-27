@@ -2,6 +2,7 @@ using Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 using SahoBackend.Mapping.Interfaces;
 using SahoBackend.Models;
+using System.Diagnostics;
 
 namespace SahoBackend.Endpoints;
 

@@ -25,12 +25,9 @@ public class UserService : IUserService
     {
         return await _userRepository.RetrieveAsync(id);
     }
-    public async Task<int> CreateOrUpdateAsync(UserDto user)
+    public async Task<int> UpdateAsync(ExtendedUserDTO user)
     {
-        if (user.Id is null)
-        {
-            return await _userRepository.CreateAsync(user);
-        }
+
         if (await _userRepository.UpdateAsync(user) > 0)
         {
             return user.Id.Value;
@@ -111,5 +108,15 @@ public class UserService : IUserService
     public async Task<IList<PlaylistEntity>> GetPlaylistsAsync(int id)
     {
         return await _userRepository.GetPlaylistsAsync(id);
+    }
+
+    public async Task<UserEntity> FindByLogin(string login)
+    {
+        return await _userRepository.FindByLogin(login);
+    }
+
+    public async Task CreateAsync(RegisterCredentialsDTO dto)
+    {
+        await _userRepository.CreateAsync(dto);
     }
 }

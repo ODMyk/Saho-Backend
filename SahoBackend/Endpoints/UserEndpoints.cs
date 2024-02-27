@@ -3,20 +3,12 @@ using SahoBackend.Models;
 using Domain.Services;
 // using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Domain.DTOs;
 
 namespace SahoBackend.Endpoints;
 
 public class UserEndpoints
 {
-    public static async Task<IResult> PostUser(
-        [FromBody] User user,
-        IUserMapper mapper,
-        IUserService userService)
-    {
-        var userDto = mapper.ModelToDto(user);
-        return Results.CreatedAtRoute("userById", new { Id = await userService.CreateOrUpdateAsync(userDto) });
-    }
-
     public static async Task<IResult> GetUserById(
         int id,
         IUserMapper mapper,
@@ -32,7 +24,8 @@ public class UserEndpoints
         IUserService userService)
     {
         var userDto = mapper.ModelToDto(user);
-        var id = await userService.CreateOrUpdateAsync(userDto);
+        var dto = new ExtendedUserDTO {Nickname = userDto.Nickname, ProfilePicture = userDto.ProfilePicture, Email = null!, Login=null!};
+        var id = await userService.UpdateAsync(dto);
 
         if (id < 0)
         {
@@ -129,6 +122,9 @@ public class UserEndpoints
         }
 
         var playlistEntity = await playlistService.RetrieveAsync(playlist.Id.Value);
+        if (playlistEntity is null) {
+            return Results.NotFound();
+        }
         if (!await userService.LikePlaylist(userId, playlistEntity))
         {
             return Results.StatusCode(StatusCodes.Status500InternalServerError);

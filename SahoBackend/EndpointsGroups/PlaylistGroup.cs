@@ -2,8 +2,10 @@ using SahoBackend.Endpoints;
 
 namespace SahoBackend.EndpointsGroups;
 
-public static class PlaylistGroup {
-    public static void AddEndpoints(this WebApplication app) {
+public static class PlaylistGroup
+{
+    public static void AddEndpoints(this WebApplication app)
+    {
         var group = app.MapGroup("/playlists");
 
         group.MapGet("/", PlaylistEndpoints.GetAllPlaylists);

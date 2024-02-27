@@ -6,6 +6,10 @@ public interface IUserRepository
 {
     Task<UserEntity> RetrieveAsync(int id);
 
+    Task<UserEntity> FindByLogin(string login);
+
+    Task CreateAsync(RegisterCredentialsDTO dto);
+
     Task<IList<UserEntity>> GetLikedArtistsAsync(int id);
 
     Task<IList<SongEntity>> GetLikedSongsAsync(int id);
@@ -21,8 +25,7 @@ public interface IUserRepository
     Task<IList<PlaylistEntity>> GetPlaylistsAsync(int id);
 
     Task<IList<UserEntity>> GetAllAsync();
-    Task<int> CreateAsync(UserDto user);
-    Task<int> UpdateAsync(UserDto user);
+    Task<int> UpdateAsync(ExtendedUserDTO user);
     Task<int> DeleteAsync(int id);
 
     Task<bool> LikeSong(int id, SongEntity song);

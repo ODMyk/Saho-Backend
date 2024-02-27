@@ -7,10 +7,30 @@ using SahoBackend.Mapping.Interfaces;
 using SahoBackend.Mapping;
 using Microsoft.EntityFrameworkCore;
 using SahoBackend.EndpointsGroups;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
+var key = Encoding.UTF8.GetBytes(Configuration.SahoConfig.JwtSecret);
 var builder = WebApplication.CreateBuilder(args);
-var dbconnection = "Host=localhost:5432; Database=SahoDB; Username=postgres; Password=postgres";
-builder.Services.AddDbContextPool<PostgreDbContext>(o => o.UseNpgsql(dbconnection, npgsqlOptionsAction: s => s.EnableRetryOnFailure(maxRetryCount: 3)));
+builder.Services.AddDbContextPool<PostgreDbContext>(o => o.UseNpgsql(Configuration.SahoConfig.PostgreConnectionString, npgsqlOptionsAction: s => s.EnableRetryOnFailure(maxRetryCount: 3)));
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
+    options.TokenValidationParameters = new TokenValidationParameters {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidIssuer = Configuration.SahoConfig.Host,
+        ValidAudience = Configuration.SahoConfig.Host,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key)
+    };
+});
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"))
+    .AddPolicy("UserPolicy", policy => policy.RequireRole("User"))
+    .AddPolicy("ArtistPolicy", policy => policy.RequireRole("Artist"));
+
 builder.Services.AddScoped<IUserMapper, UserMapper>();
 builder.Services.AddScoped<ISongMapper, SongMapper>();
 builder.Services.AddScoped<IAlbumMapper, AlbumMapper>();
@@ -26,6 +46,15 @@ builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
 
 var app = builder.Build();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Middlewares here
+
+
+
+// Endpoints binding
+AuthGroup.AddEndpoints(app);
 UserGroup.AddEndpoints(app);
 SongGroup.AddEndpoints(app);
 AlbumGroup.AddEndpoints(app);
