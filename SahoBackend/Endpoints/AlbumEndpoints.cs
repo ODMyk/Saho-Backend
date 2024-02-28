@@ -9,13 +9,17 @@ namespace SahoBackend.Endpoints;
 
 public class AlbumEndpoints
 {
-    public static async Task<IResult> GetAlbumById(int id, IAlbumService service, IAlbumMapper mapper)
+    public static async Task<IResult> GetAlbumById(int id, IAlbumService service, IAlbumMapper mapper, HttpContext context)
     {
+        // var logger = context.RequestServices.GetService<ILogger<AlbumEndpoints>>();
+        // using (logger.BeginScope("Trying to fetch album with id " + id));
+        // logger.LogInformation("Calling the service method");
         var entity = await service.RetrieveAsync(id);
+        // logger.LogInformation("Got an entity from the service");
         return entity is not null ? Results.Ok(mapper.EntityToDto(entity)) : Results.NotFound();
     }
 
-    public static async Task<IResult> GetAllAlbums(IAlbumService service, IAlbumMapper mapper)
+    public static async Task<IResult> GetAllAlbums(IAlbumService service, IAlbumMapper mapper, HttpContext context)
     {
         return Results.Ok((from x in await service.GetAllAsync() select mapper.EntityToDto(x)).ToList());
     }
