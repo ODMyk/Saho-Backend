@@ -10,17 +10,6 @@ public partial class UserRegisterCredentialsValidator : AbstractValidator<UserRe
 {
     public UserRegisterCredentialsValidator()
     {
-        RuleFor(x => x.Nickname)
-            .NotEmpty().WithMessage("{PropertyName} is required")
-            .Matches(Regexes.Title).WithMessage("{PropertyName} must be a valid nickname")
-            .Custom((name, context) =>
-                {
-                    var rg = new Regex(Regexes.HTML_Tag);
-                    if (rg.Matches(name).Count > 0) {
-                        context.AddFailure(new ValidationFailure("Nickname", "The parameter has invalid content"));
-                    }
-                });
-        
         RuleFor(x => x.Login)
             .NotEmpty().WithMessage("{PropertyName} is required")
             .Matches(Regexes.Login).WithMessage("{PropertyName} must be a valid login")

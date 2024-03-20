@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Entities;
+namespace Infrastructure.SQL.Entities;
 
-public partial class AlbumEntity
+public partial class PlaylistEntity
 {
     public int Id { get; set; }
 
     public string Title { get; set; } = null!;
 
-    public int ArtistId { get; set; }
+    public int OwnerId { get; set; }
 
-    public virtual UserEntity Artist { get; set; } = null!;
+    public bool IsPrivate { get; set; }
+
+    public bool HasCover { get; set; }
+
+    public virtual UserEntity Owner { get; set; } = null!;
 
     public virtual ICollection<SongEntity> Songs { get; set; } = new List<SongEntity>();
 

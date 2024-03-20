@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Entities;
+﻿namespace Infrastructure.SQL.Entities;
 
 public partial class UserEntity
 {
@@ -15,7 +12,9 @@ public partial class UserEntity
 
     public string Password { get; set; } = null!;
 
-    public string ProfilePicture { get; set; } = null!;
+    public int SecurityCode { get; set; }
+
+    public bool HasProfilePicture { get; set; }
 
     public virtual ICollection<RoleEntity> Roles { get; set; } = [];
 

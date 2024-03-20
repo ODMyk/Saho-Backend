@@ -12,4 +12,7 @@ public class Playlist
 
     [Required]
     public bool IsPrivate { get; set; }
+
+    [Required]
+    public bool HasCover { get; set; }
 }

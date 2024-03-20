@@ -1,34 +1,29 @@
 using SahoBackend.Mapping.Interfaces;
 using Domain.DTOs;
-using Entities;
+using Infrastructure.SQL.Entities;
 using SahoBackend.Models;
 
 namespace SahoBackend.Mapping;
 
 public class SongMapper : ISongMapper
 {
-    public SongEntity? DtoToEntity(SongDto song)
+    public SongDto? Map(SongEntity song, bool isLiked = false)
     {
-        return song is not null ? new SongEntity {
-            Id = song.Id.Value,
-            Title = song.Title,
-            ArtistId = song.ArtistId,
-            TimesPlayed = song.TimesPlayed,
-        } : null;
-    }
-
-    public SongDto? EntityToDto(SongEntity song) {
-        return song is not null ? new SongDto {
+        return song is not null ? new SongDto
+        {
             Id = song.Id,
             Title = song.Title,
-            ArtistId = song.ArtistId,
+            ArtistNickname = song.Artist?.Nickname!,
             TimesPlayed = song.TimesPlayed,
+            IsLiked = isLiked,
+            IsPrivate = song.IsPrivate,
         } : null;
     }
 
-    public SongDto? ModelToDto(Song song)
+    public SongDto? Map(Song song)
     {
-        return song is not null ? new SongDto {
+        return song is not null ? new SongDto
+        {
             Id = song.Id,
             Title = song.Title,
         } : null;

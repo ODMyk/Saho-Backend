@@ -1,8 +1,4 @@
-using Domain.Repositories;
-using Domain.Services;
 using FluentValidation;
-using BLL.Services;
-using Infrastructure.SQL.Repositories;
 using Infrastructure.SQL.Database;
 using SahoBackend.Mapping.Interfaces;
 using SahoBackend.Mapping;
@@ -12,13 +8,23 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using SahoBackend.Middlewares;
+using SahoBackend.Repositories;
+using Utils;
 
 var key = Encoding.UTF8.GetBytes(Configuration.SahoConfig.JwtSecret);
 var builder = WebApplication.CreateBuilder(args);
+
+// Set-up the CWD
+string rootDirectory = FileUtils.GetRootFolder(Directory.GetCurrentDirectory(), "SahoBackend.sln");
+Directory.SetCurrentDirectory(rootDirectory);
+
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddDbContextPool<PostgreDbContext>(o => o.UseNpgsql(Configuration.SahoConfig.PostgreConnectionString, npgsqlOptionsAction: s => s.EnableRetryOnFailure(maxRetryCount: 3)));
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
-    options.TokenValidationParameters = new TokenValidationParameters {
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
@@ -38,16 +44,20 @@ builder.Services.AddScoped<IUserMapper, UserMapper>();
 builder.Services.AddScoped<ISongMapper, SongMapper>();
 builder.Services.AddScoped<IAlbumMapper, AlbumMapper>();
 builder.Services.AddScoped<IPlaylistMapper, PlaylistMapper>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IAlbumService, AlbumService>();
-builder.Services.AddScoped<ISongService, SongService>();
-builder.Services.AddScoped<IPlaylistService, PlaylistService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAlbumRepository, AlbumRepository>();
-builder.Services.AddScoped<ISongRepository, SongRepository>();
-builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
 builder.Host.UseSerilog((context, configuration) =>
 configuration.ReadFrom.Configuration(context.Configuration));
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Restricted", builder =>
+    {
+        builder.AllowAnyHeader()
+        .WithMethods("GET", "POST", "DELETE")
+        .WithOrigins("localhost:5173")
+        .AllowCredentials();
+    });
+});
 
 var app = builder.Build();
 
@@ -55,8 +65,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // Middlewares here
+app.UseMiddleware<StrongerAuth>();
+app.UseMiddleware<InjectIsAdmin>();
 
-
+app.UseCors("Restricted");
 
 // Endpoints binding
 AuthGroup.AddEndpoints(app);
@@ -64,5 +76,7 @@ UserGroup.AddEndpoints(app);
 SongGroup.AddEndpoints(app);
 AlbumGroup.AddEndpoints(app);
 PlaylistGroup.AddEndpoints(app);
+FavoritesGroup.AddEndpoints(app);
+StorageGroup.AddEndpoints(app);
 
 app.Run();

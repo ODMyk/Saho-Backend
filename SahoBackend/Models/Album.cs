@@ -10,4 +10,7 @@ public class Album
     [Required]
     [RegularExpression(@"^[A-Za-z0-9\s\-_,\.&:;()''""]+$")]
     public string Title { get; set; }
+
+    [Required]
+    public bool HasCover { get; set; }
 }

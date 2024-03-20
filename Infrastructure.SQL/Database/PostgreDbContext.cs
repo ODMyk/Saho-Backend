@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Infrastructure.SQL.Entities;
 
 namespace Infrastructure.SQL.Database;
 

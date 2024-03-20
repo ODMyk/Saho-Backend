@@ -5,9 +5,9 @@ namespace SahoBackend.Models;
 public class User
 {
     [Required]
-    public int? Id { get; set; }
+    [RegularExpression(@"^[\p{L}\p{N}\s-_,\.&:;()'""]+$")]
+    public string Nickname { get; set; }
 
     [Required]
-    [RegularExpression(@"^[A-Za-z0-9\s\-_,\.&:;()''""]+$")]
-    public string Nickname { get; set; }
+    public bool HasProfilePicture { get; set; }
 }

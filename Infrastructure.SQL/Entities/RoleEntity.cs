@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Entities;
+namespace Infrastructure.SQL.Entities;
 
 public partial class RoleEntity
 {

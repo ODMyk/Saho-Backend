@@ -1,27 +1,52 @@
-using Domain.Services;
+using Domain.DTOs;
 using FluentValidation;
+using Infrastructure.SQL.Database;
+using Infrastructure.SQL.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SahoBackend.Mapping.Interfaces;
 using SahoBackend.Models;
-using System.Diagnostics;
 using System.Net;
 
 namespace SahoBackend.Endpoints;
 
 public class SongEndpoints
 {
-    public static async Task<IResult> GetSongById(int id, ISongService service, ISongMapper mapper)
+    public static async Task<IResult> GetSongById(HttpContext context, int id, PostgreDbContext db, ISongMapper mapper)
     {
-        var entity = await service.RetrieveAsync(id);
-        return entity is not null ? Results.Ok(mapper.EntityToDto(entity)) : Results.NotFound();
+        var user = (context.Items["User"] as UserEntity)!;
+        var song = await db.Songs.AsNoTracking().Where(s => s.Id == id).FirstOrDefaultAsync();
+        if (song is null || (song.IsPrivate && song.ArtistId != user.Id && !(bool)context.Items["IsUserAdmin"]!))
+        {
+            return Results.NotFound();
+        }
+
+        await db.Entry(song).Reference(s => s.Artist).LoadAsync();
+
+        return Results.Ok(mapper.Map(song));
     }
 
-    public static async Task<IResult> GetAllSongs(ISongService service, ISongMapper mapper)
+    public static async Task<IResult> GetAllSongs(HttpContext context, PostgreDbContext db, ISongMapper mapper)
     {
-        return Results.Ok((from x in await service.GetAllAsync() select mapper.EntityToDto(x)).ToList());
+        var user = (context.Items["User"] as UserEntity)!;
+        var songs = db.Songs.AsNoTracking().AsEnumerable();
+
+        if (!(bool)context.Items["IsUserAdmin"]!)
+        {
+            songs = songs.Where(s => !s.IsPrivate || s.ArtistId == user.Id);
+        }
+
+        ICollection<SongDto> songsDtos = [];
+        foreach (var song in songs)
+        {
+            await db.Entry(song).Reference(s => s.Artist).LoadAsync();
+            var isLiked = db.Database.SqlQuery<int>($"SELECT x.\"UserId\" FROM public.\"Favorite songs\" x WHERE x.\"UserId\" = {user.Id} AND x.\"SongId\" = {song.Id} LIMIT 1").AsEnumerable().Any();
+            songsDtos.Add(mapper.Map(song, isLiked)!);
+        }
+        return Results.Ok(songsDtos);
     }
 
-    public static async Task<IResult> PostSong([FromBody] Song song, ISongService service, ISongMapper mapper, IValidator<Song> validator)
+    public static async Task<IResult> PostSong(HttpContext context, [FromBody] Song song, PostgreDbContext db, IValidator<Song> validator)
     {
         var validationResult = validator.Validate(song);
         if (!validationResult.IsValid)
@@ -29,103 +54,52 @@ public class SongEndpoints
             return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
         }
 
-        var dto = mapper.ModelToDto(song);
-        return Results.CreatedAtRoute("songById", new { Id = await service.CreateOrUpdateAsync(dto) });
+        var user = (context.Items["User"] as UserEntity)!;
+
+        var songEntity = new SongEntity { Title = song.Title, ArtistId = user.Id, TimesPlayed = 0, Artist = user, HasCover = song.HasCover, IsPrivate = song.IsPrivate || !context.User.IsInRole("Artist") };
+        await db.AddAsync(songEntity);
+        db.Entry(user).State = EntityState.Unchanged;
+        await db.SaveChangesAsync();
+
+        return Results.CreatedAtRoute("songById", new { songEntity.Id });
     }
 
-    public static async Task<IResult> PutSong([FromBody] Song song, ISongService service, ISongMapper mapper, IValidator<Song> validator)
+    public static async Task<IResult> PutSong(HttpContext context, int id, [FromBody] Song song, PostgreDbContext db, ISongMapper mapper, IValidator<Song> validator)
     {
+        var user = (context.Items["User"] as UserEntity)!;
         var validationResult = validator.Validate(song);
         if (!validationResult.IsValid)
         {
             return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
         }
 
-        var dto = mapper.ModelToDto(song);
-        var id = await service.CreateOrUpdateAsync(dto);
-
-        if (id < 0)
-        {
-            return Results.StatusCode(StatusCodes.Status500InternalServerError);
-        }
-
-        if (song.Id is not null)
-        {
-            return Results.NoContent();
-        }
-        return Results.CreatedAtRoute("songById", new { Id = id });
-    }
-
-    public static async Task<IResult> DeleteSong(int id, ISongService service)
-    {
-        return await service.DeleteAsync(id) ? Results.NoContent() : Results.NotFound();
-    }
-
-    public static async Task<IResult> AddToAlbum(int id, [FromBody] Album album, ISongService songService, IAlbumService albumService, IValidator<Album> validator)
-    {
-        var validationResult = validator.Validate(album);
-        if (!validationResult.IsValid)
-        {
-            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
-        }
-
-        if (album.Id is null)
+        var songEntity = await db.Songs.FindAsync(id);
+        if (songEntity is null || (songEntity.ArtistId != user.Id && !(bool)context.Items["IsUserAdmin"]!))
         {
             return Results.NotFound();
         }
 
-        var albumEntity = await albumService.RetrieveAsync(album.Id.Value);
-        return await songService.AddToAlbum(id, albumEntity) ? Results.NoContent() : Results.NotFound();
+        db.Update(songEntity);
+        songEntity.Title = song.Title;
+        songEntity.IsPrivate = song.IsPrivate || !context.User.IsInRole("Artist");
+        await db.SaveChangesAsync();
+
+        return Results.NoContent();
     }
 
-    public static async Task<IResult> AddToPlaylist(int id, [FromBody] Playlist playlist, ISongService songService, IPlaylistService playlistService, IValidator<Playlist> validator)
+    public static async Task<IResult> DeleteSong(int id, PostgreDbContext db, HttpContext context)
     {
-        var validationResult = validator.Validate(playlist);
-        if (!validationResult.IsValid)
-        {
-            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
-        }
 
-        if (playlist.Id is null)
+        var user = (context.Items["User"] as UserEntity)!;
+        var song = await db.Songs.AsNoTracking().Where(s => s.Id == id).FirstOrDefaultAsync();
+        if (song is null || (song.ArtistId != user.Id && !(bool)context.Items["IsUserAdmin"]!))
         {
             return Results.NotFound();
         }
 
-        var playlistEntity = await playlistService.RetrieveAsync(playlist.Id.Value);
-        return await songService.AddToPlaylist(id, playlistEntity) ? Results.NoContent() : Results.NotFound();
-    }
+        db.Remove(song);
+        await db.SaveChangesAsync();
 
-    public static async Task<IResult> RemoveFromAlbum(int id, [FromBody] Album album, ISongService songService, IAlbumService albumService, IValidator<Album> validator)
-    {
-        var validationResult = validator.Validate(album);
-        if (!validationResult.IsValid)
-        {
-            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
-        }
-
-        if (album.Id is null)
-        {
-            return Results.NotFound();
-        }
-
-        var albumEntity = await albumService.RetrieveAsync(album.Id.Value);
-        return await songService.RemoveFromAlbum(id, albumEntity) ? Results.NoContent() : Results.NotFound();
-    }
-
-    public static async Task<IResult> RemoveFromPlaylist(int id, [FromBody] Playlist playlist, ISongService songService, IPlaylistService playlistService, IValidator<Playlist> validator)
-    {
-        var validationResult = validator.Validate(playlist);
-        if (!validationResult.IsValid)
-        {
-            return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
-        }
-
-        if (playlist.Id is null)
-        {
-            return Results.NotFound();
-        }
-
-        var playlistEntity = await playlistService.RetrieveAsync(playlist.Id.Value);
-        return await songService.RemoveFromPlaylist(id, playlistEntity) ? Results.NoContent() : Results.NotFound();
+        return Results.NoContent();
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Entities;
+namespace Infrastructure.SQL.Entities;
 
 public partial class SongEntity
 {
@@ -12,6 +12,10 @@ public partial class SongEntity
     public int ArtistId { get; set; }
 
     public int TimesPlayed { get; set; }
+
+    public bool HasCover { get; set; }
+
+    public bool IsPrivate { get; set; }
 
     public virtual UserEntity Artist { get; set; } = null!;
 

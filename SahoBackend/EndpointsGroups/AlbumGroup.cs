@@ -1,16 +1,23 @@
+using Microsoft.AspNetCore.Authorization;
 using SahoBackend.Endpoints;
 
 namespace SahoBackend.EndpointsGroups;
 
-public static class AlbumGroup {
-    public static void AddEndpoints(this WebApplication app) {
+public static class AlbumGroup
+{
+    public static void AddEndpoints(this WebApplication app)
+    {
         var group = app.MapGroup("/albums");
 
-        group.MapGet("/", AlbumEndpoints.GetAllAlbums);
+        group.RequireAuthorization(new AuthorizeAttribute { Policy = "UserPolicy" });
+
         group.MapGet("/{id}", AlbumEndpoints.GetAlbumById).WithName("albumById");
-        group.MapPost("/", AlbumEndpoints.PostAlbum);
+        group.MapGet("/", AlbumEndpoints.GetAllAlbums);
+        group.MapPost("/", AlbumEndpoints.PostAlbum).RequireAuthorization(new AuthorizeAttribute { Policy = "ArtistPolicy" });
         group.MapPut("/", AlbumEndpoints.PutAlbum);
         group.MapDelete("/{id}", AlbumEndpoints.DeleteAlbum);
         group.MapGet("/{id}/songs", AlbumEndpoints.GetSongs);
+        group.MapPost("/{albumId}/songs/{songId}", AlbumEndpoints.AddSong).RequireAuthorization(new AuthorizeAttribute { Policy = "ArtistPolicy" }); ;
+        group.MapDelete("/{albumId}/songs/{songId}", AlbumEndpoints.RemoveSong).RequireAuthorization(new AuthorizeAttribute { Policy = "ArtistPolicy" }); ;
     }
 }

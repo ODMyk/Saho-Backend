@@ -1,12 +1,11 @@
 using SahoBackend.Models;
-using Entities;
+using Infrastructure.SQL.Entities;
 using Domain.DTOs;
 
 namespace SahoBackend.Mapping.Interfaces;
 
 public interface IAlbumMapper
 {
-    public AlbumDto? ModelToDto(Album model);
-    public AlbumEntity? DtoToEntity(AlbumDto dto);
-    public AlbumDto? EntityToDto(AlbumEntity entity);
+    public AlbumDto? Map(Album model);
+    public AlbumDto? Map(AlbumEntity entity);
 }

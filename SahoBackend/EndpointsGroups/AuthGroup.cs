@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using SahoBackend.Endpoints;
 
 namespace SahoBackend.EndpointsGroups;
@@ -9,5 +10,6 @@ public static class AuthGroup
 
         group.MapPost("/", AuthEndpoints.Login);
         group.MapPost("/new", AuthEndpoints.Register);
+        group.MapGet("/", AuthEndpoints.GetMe).RequireAuthorization(new AuthorizeAttribute {Policy = "UserPolicy"});
     }    
 }
