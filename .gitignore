@@ -9,10 +9,16 @@
 # Logs
 Logs/
 
+# Migrations
+**/Migrations/
+
 # Generated files
 project.lock.json
 .vs/
 **/.vscode/
+
+# project storage
+**/storage/
 
 # mstest test results
 TestResults

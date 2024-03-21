@@ -60,6 +60,8 @@ public class AuthEndpoints
         db.Entry(defaultRole!).State = EntityState.Unchanged;
         await db.SaveChangesAsync();
 
+        Directory.CreateDirectory(Path.Combine("storage", "users", user.Id.ToString()));
+
         return Results.Created();
     }
 

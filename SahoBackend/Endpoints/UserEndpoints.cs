@@ -76,11 +76,17 @@ public class UserEndpoints
         }
 
         string path = Path.Combine("storage", "users", user.Id.ToString());
-        path = Directory.EnumerateFiles(path, "avatar.*").FirstOrDefault() ?? "";
-        if (path == "")
+        var toDelete = Directory.EnumerateFiles(path, "avatar.*");
+        var extension = picture.FileName.Split(".").Last();
+        path = Path.Combine(path, $"avatar.{extension}");
+        foreach (var file in toDelete)
         {
-            return Results.StatusCode(StatusCodes.Status500InternalServerError);
+            if (!file.EndsWith(extension))
+            {
+                File.Delete(file);
+            }
         }
+
         using (var file = File.OpenWrite(path))
         {
             await picture.CopyToAsync(file);

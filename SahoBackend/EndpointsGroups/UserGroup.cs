@@ -17,7 +17,7 @@ public static class UserGroup
         group.MapDelete("/{id}", UserEndpoints.DeleteUserById);
         group.MapPut("/", UserEndpoints.UpdateProfile);
         group.MapPut("/password", UserEndpoints.ChangePassword);
-        group.MapPut("/picture", UserEndpoints.UpdateProfilePicture);
+        group.MapPut("/picture", UserEndpoints.UpdateProfilePicture).DisableAntiforgery();
         group.MapDelete("/picture", UserEndpoints.DeleteProfilePicture);
         group.MapGet("/{artistId}/songs", UserEndpoints.GetSongsOfUser);
     }

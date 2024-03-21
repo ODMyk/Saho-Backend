@@ -40,6 +40,8 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy("UserPolicy", policy => policy.RequireRole("User"))
     .AddPolicy("ArtistPolicy", policy => policy.RequireRole("Artist"));
 
+// builder.Services.AddAntiforgery();
+
 builder.Services.AddScoped<IUserMapper, UserMapper>();
 builder.Services.AddScoped<ISongMapper, SongMapper>();
 builder.Services.AddScoped<IAlbumMapper, AlbumMapper>();
@@ -69,6 +71,7 @@ app.UseMiddleware<StrongerAuth>();
 app.UseMiddleware<InjectIsAdmin>();
 
 app.UseCors("Restricted");
+// app.UseAntiforgery();
 
 // Endpoints binding
 AuthGroup.AddEndpoints(app);
