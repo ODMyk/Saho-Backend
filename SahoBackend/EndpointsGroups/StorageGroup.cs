@@ -4,7 +4,7 @@ namespace SahoBackend.EndpointsGroups;
 
 public static class StorageGroup
 {
-    public static void AddEndpoints(this WebApplication app)
+    public static void AddStorageEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/storage");
 

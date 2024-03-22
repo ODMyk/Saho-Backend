@@ -5,7 +5,7 @@ namespace SahoBackend.EndpointsGroups;
 
 public static class PlaylistGroup
 {
-    public static void AddEndpoints(this WebApplication app)
+    public static void AddPlaylistEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/playlists");
 

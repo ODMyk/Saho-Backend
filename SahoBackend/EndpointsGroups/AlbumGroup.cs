@@ -5,7 +5,7 @@ namespace SahoBackend.EndpointsGroups;
 
 public static class AlbumGroup
 {
-    public static void AddEndpoints(this WebApplication app)
+    public static void AddAlbumEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/albums");
 

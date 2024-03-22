@@ -4,7 +4,7 @@ using SahoBackend.Endpoints;
 namespace SahoBackend.EndpointsGroups;
 
 public static class SongGroup {
-    public static void AddEndpoints(this WebApplication app) {
+    public static void AddSongEndpoints(this WebApplication app) {
         var group = app.MapGroup("/songs");
 
         group.RequireAuthorization(new AuthorizeAttribute {Policy = "UserPolicy"});

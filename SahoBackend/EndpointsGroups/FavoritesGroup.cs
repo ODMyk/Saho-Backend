@@ -5,7 +5,7 @@ namespace SahoBackend.EndpointsGroups;
 
 public static class FavoritesGroup
 {
-    public static void AddEndpoints(this WebApplication app)
+    public static void AddFavoritesEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/favorites");
 
