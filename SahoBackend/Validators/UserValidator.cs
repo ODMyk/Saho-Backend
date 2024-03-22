@@ -12,7 +12,7 @@ public partial class UserValidator : AbstractValidator<User>
     {
         RuleFor(x => x.Nickname)
             .NotEmpty().WithMessage("{PropertyName} is required")
-            .Matches(Regexes.Title).WithMessage("{PropertyName} must be a valid Title/Nickname")
+            .Matches(Regexes.Nickname).WithMessage("{PropertyName} must be a valid Nickname")
             .Custom((name, context) =>
                 {
                     var rg = new Regex(Regexes.HTML_Tag);
