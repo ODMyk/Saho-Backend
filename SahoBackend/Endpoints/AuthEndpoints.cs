@@ -53,7 +53,7 @@ public class AuthEndpoints
             return Results.Conflict();
         }
 
-        var user = new UserEntity { Email = auth.Email, Login = auth.Login, Password = BCrypt.Net.BCrypt.HashPassword(auth.Password), Nickname = "!" + auth.Login };
+        var user = new UserEntity { Email = auth.Email, Login = auth.Login, Password = BCrypt.Net.BCrypt.HashPassword(auth.Password), Nickname = auth.Login };
         var defaultRole = await db.Roles.AsNoTracking().Where(r => r.Id == 1).FirstOrDefaultAsync();
         await db.AddAsync(user);
         user.Roles.Add(defaultRole!);

@@ -42,7 +42,7 @@ public class UserEndpoints
         );
     }
 
-    public static async Task<IResult> UpdateProfile(
+    public static async Task<IResult> UpdateNickname(
         [FromBody] User user,
         PostgreDbContext db,
         HttpContext context,
@@ -57,6 +57,19 @@ public class UserEndpoints
         var userEntity = (context.Items["User"] as UserEntity)!;
         if (user.Nickname != userEntity.Nickname)
         {
+            await db.Entry(userEntity).Collection(u => u.Roles).LoadAsync();
+
+            // If user is artist and the nickname he wants to set is already used by another artist
+            if ((bool)context.Items["IsUserArtist"]!
+                && db.Users.Include(u => u.Roles)
+                    .Where(u => u.Roles.Any(r => r.Title == "Artist"))
+                    .AsNoTracking()
+                    .Any(u => u.Nickname == user.Nickname))
+            {
+                return Results.Conflict();
+            }
+
+            userEntity = (await db.FindAsync<UserEntity>(userEntity.Id))!;
             db.Attach(userEntity);
             userEntity.Nickname = user.Nickname;
             await db.SaveChangesAsync();
@@ -177,5 +190,22 @@ public class UserEndpoints
             songsDtos.Add(mapper.Map(song, isLiked)!);
         }
         return Results.Ok(songsDtos);
+    }
+
+    public static async Task<IResult> MakeUserArtist(HttpContext context, PostgreDbContext db)
+    {
+        var userEntity = (await db.FindAsync<UserEntity>((context.Items["User"] as UserEntity)!.Id))!;
+        if (!(bool)context.Items["IsUserArtist"]!)
+        {
+            await db.Entry(userEntity).Collection(u => u.Roles).LoadAsync();
+            var role = (await db.FindAsync<RoleEntity>(2))!;
+            db.Attach(userEntity);
+            userEntity.Roles.Add(role);
+            await db.SaveChangesAsync();
+
+            return Results.Ok(AuthEndpoints.GenerateToken(userEntity));
+        }
+
+        return Results.NoContent();
     }
 }
