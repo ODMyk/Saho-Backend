@@ -11,6 +11,11 @@ using Serilog;
 using SahoBackend.Middlewares;
 using SahoBackend.Repositories;
 using Utils;
+using Asp.Versioning;
+using Asp.Versioning.Conventions;
+using SahoBackend.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.Extensions.Options;
 
 var key = Encoding.UTF8.GetBytes(Configuration.SahoConfig.JwtSecret);
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +23,22 @@ var builder = WebApplication.CreateBuilder(args);
 // Set-up the CWD
 string rootDirectory = FileUtils.GetRootFolder(Directory.GetCurrentDirectory(), "SahoBackend.sln");
 Directory.SetCurrentDirectory(rootDirectory);
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.ReportApiVersions = true;
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ApiVersionReader = new HeaderApiVersionReader("api-version");
+})
+.AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VV";
+});
+
+builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<IConfigureOptions<SwaggerGenOptions>, SwaggerConfigurationsOptions>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddDbContextPool<PostgreDbContext>(o => o.UseNpgsql(Configuration.SahoConfig.PostgreConnectionString, npgsqlOptionsAction: s => s.EnableRetryOnFailure(maxRetryCount: 3)));
@@ -63,23 +84,31 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+app.UseSwagger().UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint($"/swagger/v1.0/swagger.json", "Version 1.0");
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 // Middlewares here
 app.UseMiddleware<StrongerAuth>();
 app.UseMiddleware<InjectIsAdmin>();
+app.UseMiddleware<InjectIsArtist>();
 
 app.UseCors("Restricted");
 // app.UseAntiforgery();
 
+var versionSet = app.NewApiVersionSet().HasApiVersion(1.0).Build();
+
 // Endpoints binding
-AuthGroup.AddEndpoints(app);
-UserGroup.AddEndpoints(app);
-SongGroup.AddEndpoints(app);
-AlbumGroup.AddEndpoints(app);
-PlaylistGroup.AddEndpoints(app);
-FavoritesGroup.AddEndpoints(app);
-StorageGroup.AddEndpoints(app);
+app.AddAlbumEndpoints();
+app.AddAuthEndpoints();
+app.AddFavoritesEndpoints();
+app.AddPlaylistEndpoints();
+app.AddSongEndpoints();
+app.AddStorageEndpoints();
+app.AddUserEndpoints();
 
 app.Run();
