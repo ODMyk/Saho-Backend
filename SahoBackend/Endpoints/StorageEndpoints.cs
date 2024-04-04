@@ -39,21 +39,21 @@ public class StorageEndpoints
 
     public static async Task<IResult> GetSongCover(int songId, HttpContext context, PostgreDbContext db)
     {
-        var song = await db.Songs.AsNoTracking().Include(s => s.Artist).Where(s => s.Id == songId).FirstOrDefaultAsync();
+        var song = await db.Songs.AsNoTracking().Include(s => s.Artist).Include(s => s.Album).Where(s => s.Id == songId).FirstOrDefaultAsync();
         if (song is null)
         {
             return Results.NotFound();
         }
 
-        if (context.User.Identity!.Name != song.Artist.Nickname && !(bool)context.Items["IsUserAdmin"]! && song.IsPrivate)
+        if (context.User.Identity!.Name != song.Artist.Nickname && !(bool)context.Items["IsUserAdmin"]! && song.Album.IsPrivate)
         {
             return Results.Forbid();
         }
 
         string path = Path.Combine("storage", "songs", "default", "cover.png");
-        if (song.HasCover)
+        if (song.Album.HasCover)
         {
-            path = Path.Combine("storage", "songs", song.Id.ToString());
+            path = Path.Combine("storage", "albums", song.AlbumId.ToString());
             path = Directory.EnumerateFiles(path, "cover.*").FirstOrDefault() ?? "";
         }
 
@@ -66,6 +66,36 @@ public class StorageEndpoints
         var imageBytes = await File.ReadAllBytesAsync(path);
 
         return Results.File(imageBytes, mime);
+    }
+
+    public static async Task<IResult> GetDefaultAlbumCover()
+    {
+        string path = Path.Combine("storage", "songs", "default", "cover.png");
+
+        var mime = FileUtils.GetMimeType(Path.GetExtension(path));
+        var imageBytes = await File.ReadAllBytesAsync(path);
+
+        return Results.File(imageBytes, mime);
+    }
+
+    public static async Task<IResult> UploadSong(string id, IFormFile audio, IFormFile? lyrics)
+    {
+        var path = Path.Combine("storage", "songs", id);
+        var extension = audio.FileName.Split(".").Last();
+
+        Directory.CreateDirectory(path);
+        using (var fileStream = File.OpenWrite(Path.Combine(path, $"audio.{extension}")))
+        {
+            await audio.CopyToAsync(fileStream);
+        }
+
+        if (lyrics is not null)
+        {
+            using var fileStream = File.OpenWrite(Path.Combine(path, "lyrics.lrc"));
+            await lyrics.CopyToAsync(fileStream);
+        }
+
+        return Results.NoContent();
     }
 
     // public static async Task<IResult> GetSongLyrics(int songId, HttpContext context, PostgreDbContext db)

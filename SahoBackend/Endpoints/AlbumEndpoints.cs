@@ -99,42 +99,6 @@ public class AlbumEndpoints
         return Results.Ok(album.Songs.Select(x => mapper.Map(x)));
     }
 
-    public static async Task<IResult> AddSong(int albumId, int songId, HttpContext context, PostgreDbContext db)
-    {
-        var user = (context.Items["User"] as UserEntity)!;
-        var album = await db.Albums.AsNoTracking().Where(a => a.Id == albumId).FirstOrDefaultAsync();
-        if (album is null)
-        {
-            return Results.NotFound();
-        }
-
-        if (album.ArtistId != user.Id)
-        {
-            return Results.Forbid();
-        }
-
-        var song = await db.Songs.AsNoTracking().Where(s => s.Id == songId).FirstOrDefaultAsync();
-        if (song is null)
-        {
-            return Results.NotFound();
-        }
-
-        if (song.ArtistId != user.Id)
-        {
-            return Results.Forbid();
-        }
-
-        await db.Entry(song).Collection(s => s.Albums).LoadAsync();
-        if (song.Albums.All(a => a.Id != albumId))
-        {
-            db.Attach(song);
-            song.Albums.Add(album);
-            await db.SaveChangesAsync();
-        }
-
-        return Results.NoContent();
-    }
-
     public static async Task<IResult> RemoveSong(int albumId, int songId, HttpContext context, PostgreDbContext db)
     {
         var user = (context.Items["User"] as UserEntity)!;

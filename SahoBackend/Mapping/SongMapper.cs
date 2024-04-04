@@ -16,7 +16,6 @@ public class SongMapper : ISongMapper
             ArtistNickname = song.Artist?.Nickname!,
             TimesPlayed = song.TimesPlayed,
             IsLiked = isLiked,
-            IsPrivate = song.IsPrivate,
         } : null;
     }
 

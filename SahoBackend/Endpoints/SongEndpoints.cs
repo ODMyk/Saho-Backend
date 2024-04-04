@@ -4,6 +4,7 @@ using Infrastructure.SQL.Database;
 using Infrastructure.SQL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using SahoBackend.Mapping.Interfaces;
 using SahoBackend.Models;
 using System.Net;
@@ -15,8 +16,8 @@ public class SongEndpoints
     public static async Task<IResult> GetSongById(HttpContext context, int id, PostgreDbContext db, ISongMapper mapper)
     {
         var user = (context.Items["User"] as UserEntity)!;
-        var song = await db.Songs.AsNoTracking().Where(s => s.Id == id).FirstOrDefaultAsync();
-        if (song is null || (song.IsPrivate && song.ArtistId != user.Id && !(bool)context.Items["IsUserAdmin"]!))
+        var song = await db.Songs.AsNoTracking().Include(s => s.Album).Where(s => s.Id == id).FirstOrDefaultAsync();
+        if (song is null || (song.Album.IsPrivate && song.ArtistId != user.Id && !(bool)context.Items["IsUserAdmin"]!))
         {
             return Results.NotFound();
         }
@@ -29,11 +30,11 @@ public class SongEndpoints
     public static async Task<IResult> GetAllSongs(HttpContext context, PostgreDbContext db, ISongMapper mapper)
     {
         var user = (context.Items["User"] as UserEntity)!;
-        var songs = db.Songs.AsNoTracking().AsEnumerable();
+        var songs = db.Songs.AsNoTracking().Include(s => s.Album).AsEnumerable();
 
         if (!(bool)context.Items["IsUserAdmin"]!)
         {
-            songs = songs.Where(s => !s.IsPrivate || s.ArtistId == user.Id);
+            songs = songs.Where(s => !s.Album.IsPrivate || s.ArtistId == user.Id);
         }
 
         ICollection<SongDto> songsDtos = [];
@@ -56,12 +57,12 @@ public class SongEndpoints
 
         var user = (context.Items["User"] as UserEntity)!;
 
-        var songEntity = new SongEntity { Title = song.Title, ArtistId = user.Id, TimesPlayed = 0, Artist = user, HasCover = song.HasCover, IsPrivate = song.IsPrivate || !context.User.IsInRole("Artist") };
+        var songEntity = new SongEntity { Title = song.Title, ArtistId = user.Id, TimesPlayed = 0, Artist = user, HasLyrics = song.HasLyrics, AlbumId = song.AlbumId };
         await db.AddAsync(songEntity);
         db.Entry(user).State = EntityState.Unchanged;
         await db.SaveChangesAsync();
 
-        return Results.CreatedAtRoute("songById", new { songEntity.Id });
+        return Results.Ok(songEntity.Id);
     }
 
     public static async Task<IResult> PutSong(HttpContext context, int id, [FromBody] Song song, PostgreDbContext db, ISongMapper mapper, IValidator<Song> validator)
@@ -81,7 +82,6 @@ public class SongEndpoints
 
         db.Update(songEntity);
         songEntity.Title = song.Title;
-        songEntity.IsPrivate = song.IsPrivate || !context.User.IsInRole("Artist");
         await db.SaveChangesAsync();
 
         return Results.NoContent();

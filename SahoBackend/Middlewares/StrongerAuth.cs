@@ -10,9 +10,12 @@ public class StrongerAuth(RequestDelegate next)
     public async Task Invoke(HttpContext context)
     {
         var repository = context.RequestServices.GetService<IUserRepository>();
-        var user = await repository!.GetUser(int.Parse(context.User.FindFirst("id")?.Value ?? "-1"));
+        var id = int.Parse(context.User.FindFirst("id")?.Value ?? "-1");
+        var user = await repository!.GetUser(id);
 
-        if (user is not null && user.SecurityCode != int.Parse(context.User.FindFirstValue("SecurityCode")!))
+        if ((user is null && id >= 0)
+            || user is not null
+            && user.SecurityCode != int.Parse(context.User.FindFirstValue("SecurityCode")!))
         {
             context.Response.StatusCode = 401;
             return;

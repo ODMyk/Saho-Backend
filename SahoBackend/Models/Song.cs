@@ -11,8 +11,8 @@ public class Song
     public string Title { get; set; }
 
     [Required]
-    public bool IsPrivate { get; set; }
+    public bool HasLyrics { get; set; }
 
     [Required]
-    public bool HasCover { get; set; }
+    public int AlbumId { get; set; }
 }

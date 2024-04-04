@@ -11,15 +11,10 @@ public static class UserGroup
 
         group.RequireAuthorization(new AuthorizeAttribute { Policy = "UserPolicy" });
 
-        group.MapGet("/{id}", UserEndpoints.GetUserById).WithName("userById");
         group.MapGet("/me/extended", UserEndpoints.GetExtendedInfo);
-        group.MapGet("/makeArtist", UserEndpoints.MakeUserArtist);
-        group.MapGet("/", UserEndpoints.GetAllUsers);
-        group.MapDelete("/{id}", UserEndpoints.DeleteUserById);
-        group.MapPatch("/nickname", UserEndpoints.UpdateNickname);
+        group.MapGet("/makeArtist", UserEndpoints.MakeUserOrganization);
         group.MapPut("/password", UserEndpoints.ChangePassword);
-        group.MapPut("/picture", UserEndpoints.UpdateProfilePicture).DisableAntiforgery();
-        group.MapDelete("/picture", UserEndpoints.DeleteProfilePicture);
-        group.MapGet("/{artistId}/songs", UserEndpoints.GetSongsOfUser);
+        group.MapGet("/", UserEndpoints.GetAllUsers).RequireAuthorization(new AuthorizeAttribute { Policy = "AdminPolicy" });
+        group.MapDelete("/{id}", UserEndpoints.DeleteUserById).RequireAuthorization(new AuthorizeAttribute { Policy = "AdminPolicy" });
     }
 }

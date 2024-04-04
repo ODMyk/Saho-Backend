@@ -9,19 +9,15 @@ public partial class SongEntity
 
     public string Title { get; set; } = null!;
 
-    public int ArtistId { get; set; }
+    public int AlbumId { get; set; }
 
     public int TimesPlayed { get; set; }
 
-    public bool HasCover { get; set; }
+    public bool HasLyrics { get; set; }
 
-    public bool IsPrivate { get; set; }
-
-    public virtual UserEntity Artist { get; set; } = null!;
-
-    public virtual ICollection<AlbumEntity> Albums { get; set; } = new List<AlbumEntity>();
+    public virtual AlbumEntity Album { get; set; } = null!;
 
     public virtual ICollection<PlaylistEntity> Playlists { get; set; } = new List<PlaylistEntity>();
 
-    public virtual ICollection<UserEntity> LikedByUsers { get; set; } = new List<UserEntity>();
+    public virtual ICollection<ArtistEntity> LikedBy { get; set; } = new List<ArtistEntity>();
 }

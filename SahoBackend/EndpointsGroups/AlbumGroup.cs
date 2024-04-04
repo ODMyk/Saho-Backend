@@ -17,7 +17,6 @@ public static class AlbumGroup
         group.MapPut("/", AlbumEndpoints.PutAlbum);
         group.MapDelete("/{id}", AlbumEndpoints.DeleteAlbum);
         group.MapGet("/{id}/songs", AlbumEndpoints.GetSongs);
-        group.MapPost("/{albumId}/songs/{songId}", AlbumEndpoints.AddSong).RequireAuthorization(new AuthorizeAttribute { Policy = "ArtistPolicy" }); ;
         group.MapDelete("/{albumId}/songs/{songId}", AlbumEndpoints.RemoveSong).RequireAuthorization(new AuthorizeAttribute { Policy = "ArtistPolicy" }); ;
     }
 }

@@ -9,6 +9,8 @@ public static class StorageGroup
         var group = app.MapGroup("/storage");
 
         group.MapGet("/users/{id}/avatar", StorageEndpoints.GetUserProfilePicture);
+        group.MapGet("/albums/cover", StorageEndpoints.GetDefaultAlbumCover);
+        group.MapPost("/songs/upload/{id}", StorageEndpoints.UploadSong).DisableAntiforgery();
     }
     
 }

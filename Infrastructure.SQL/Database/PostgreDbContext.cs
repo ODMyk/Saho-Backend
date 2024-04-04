@@ -45,25 +45,6 @@ public partial class PostgreDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("Album_ArtistId_FK");
 
-            entity.HasMany(d => d.Songs).WithMany(p => p.Albums)
-                .UsingEntity<Dictionary<string, object>>(
-                    "AlbumSong",
-                    r => r.HasOne<SongEntity>().WithMany()
-                        .HasForeignKey("SongId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .HasConstraintName("AlbumSong_SongId_FK"),
-                    l => l.HasOne<AlbumEntity>().WithMany()
-                        .HasForeignKey("AlbumId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .HasConstraintName("AlbumSong_AlbumId_FK"),
-                    j =>
-                    {
-                        j.HasKey("AlbumId", "SongId").HasName("AlbumSongs_PK");
-                        j.ToTable("Album songs");
-                        j.IndexerProperty<int>("AlbumId").HasColumnName("AlbumId");
-                        j.IndexerProperty<int>("SongId").HasColumnName("SongId");
-                    });
-
             entity.HasMany(d => d.LikedByUsers).WithMany(p => p.LikedAlbums)
                 .UsingEntity<Dictionary<string, object>>(
                     "FavoriteAlbum",
@@ -165,6 +146,11 @@ public partial class PostgreDbContext : DbContext
                 .HasForeignKey(d => d.ArtistId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("Song_ArtistId_FK");
+
+            entity.HasOne(s => s.Album).WithMany(a => a.Songs)
+                .HasConstraintName("AlbumID_ForeignKey")
+                .HasForeignKey(s => s.AlbumId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasMany(d => d.LikedByUsers).WithMany(p => p.LikedSongs)
                 .UsingEntity<Dictionary<string, object>>(

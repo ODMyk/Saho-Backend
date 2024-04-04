@@ -15,9 +15,9 @@ public partial class PlaylistEntity
 
     public bool HasCover { get; set; }
 
-    public virtual UserEntity Owner { get; set; } = null!;
+    public virtual ArtistEntity Owner { get; set; } = null!;
 
-    public virtual ICollection<SongEntity> Songs { get; set; } = new List<SongEntity>();
+    public virtual ICollection<SongEntity> Songs { get; set; } = [];
 
-    public virtual ICollection<UserEntity> LikedByUsers { get; set; } = new List<UserEntity>();
+    public virtual ICollection<ArtistEntity> LikedBy { get; set; } = [];
 }

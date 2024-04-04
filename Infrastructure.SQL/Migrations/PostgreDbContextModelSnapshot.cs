@@ -21,24 +21,6 @@ namespace Infrastructure.SQL.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("AlbumSong", b =>
-                {
-                    b.Property<int>("AlbumId")
-                        .HasColumnType("integer")
-                        .HasColumnName("AlbumId");
-
-                    b.Property<int>("SongId")
-                        .HasColumnType("integer")
-                        .HasColumnName("SongId");
-
-                    b.HasKey("AlbumId", "SongId")
-                        .HasName("AlbumSongs_PK");
-
-                    b.HasIndex("SongId");
-
-                    b.ToTable("Album songs", "public");
-                });
-
             modelBuilder.Entity("FavoriteAlbum", b =>
                 {
                     b.Property<int>("AlbumId")
@@ -127,6 +109,9 @@ namespace Infrastructure.SQL.Migrations
                     b.Property<bool>("HasCover")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsPrivate")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -201,14 +186,14 @@ namespace Infrastructure.SQL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AlbumId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("ArtistId")
                         .HasColumnType("integer")
                         .HasColumnName("ArtistId");
 
-                    b.Property<bool>("HasCover")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsPrivate")
+                    b.Property<bool>("HasLyrics")
                         .HasColumnType("boolean");
 
                     b.Property<int>("TimesPlayed")
@@ -221,6 +206,8 @@ namespace Infrastructure.SQL.Migrations
 
                     b.HasKey("Id")
                         .HasName("Songs_PK");
+
+                    b.HasIndex("AlbumId");
 
                     b.HasIndex("ArtistId");
 
@@ -299,23 +286,6 @@ namespace Infrastructure.SQL.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("User roles", "public");
-                });
-
-            modelBuilder.Entity("AlbumSong", b =>
-                {
-                    b.HasOne("Infrastructure.SQL.Entities.AlbumEntity", null)
-                        .WithMany()
-                        .HasForeignKey("AlbumId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("AlbumSong_AlbumId_FK");
-
-                    b.HasOne("Infrastructure.SQL.Entities.SongEntity", null)
-                        .WithMany()
-                        .HasForeignKey("SongId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("AlbumSong_SongId_FK");
                 });
 
             modelBuilder.Entity("FavoriteAlbum", b =>
@@ -412,12 +382,21 @@ namespace Infrastructure.SQL.Migrations
 
             modelBuilder.Entity("Infrastructure.SQL.Entities.SongEntity", b =>
                 {
+                    b.HasOne("Infrastructure.SQL.Entities.AlbumEntity", "Album")
+                        .WithMany("Songs")
+                        .HasForeignKey("AlbumId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("AlbumID_ForeignKey");
+
                     b.HasOne("Infrastructure.SQL.Entities.UserEntity", "Artist")
                         .WithMany("Songs")
                         .HasForeignKey("ArtistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("Song_ArtistId_FK");
+
+                    b.Navigation("Album");
 
                     b.Navigation("Artist");
                 });
@@ -454,6 +433,11 @@ namespace Infrastructure.SQL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("UserRoles_UserId_FK");
+                });
+
+            modelBuilder.Entity("Infrastructure.SQL.Entities.AlbumEntity", b =>
+                {
+                    b.Navigation("Songs");
                 });
 
             modelBuilder.Entity("Infrastructure.SQL.Entities.UserEntity", b =>

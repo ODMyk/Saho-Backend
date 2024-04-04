@@ -10,9 +10,11 @@ public partial class AlbumEntity
 
     public bool HasCover { get; set; }
 
-    public virtual UserEntity Artist { get; set; } = null!;
+    public bool IsPrivate { get; set; }
+
+    public virtual ArtistEntity Artist { get; set; } = null!;
 
     public virtual ICollection<SongEntity> Songs { get; set; } = [];
 
-    public virtual ICollection<UserEntity> LikedByUsers { get; set; } = [];
+    public virtual ICollection<ArtistEntity> LikedBy { get; set; } = [];
 }
